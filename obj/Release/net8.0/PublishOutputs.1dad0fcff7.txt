@@ -1,0 +1,12 @@
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\hello-world.exe
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\appsettings.Development.json
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\appsettings.json
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\build\asset-manifest.json
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\build\manifest.json
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\package-lock.json
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\package.json
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\public\manifest.json
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\hello-world.dll
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\hello-world.deps.json
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\hello-world.runtimeconfig.json
+C:\Users\PC\Desktop\Coding\React\hello-world-v1\publish\hello-world.pdb

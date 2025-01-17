@@ -1,0 +1,126 @@
+body {
+    background-color: #f4f6f9;
+}
+
+.header {
+    background-color: #347960; /* Corrected to single background color */
+    color: white;
+    padding: 10px 20px;
+}
+
+    .header .navbar-brand {
+        color: white;
+    }
+
+.menu-icon {
+    font-size: 2rem; /* Smaller icon size */
+    margin: 10px;
+    cursor: pointer;
+    color: #45523e; /* Soft green color */
+}
+
+    .menu-icon:hover {
+        color: #5cb25d; /* Lighter green when hovered */
+    }
+
+    .menu-icon:active {
+        color: red; /* Blue color when clicked */
+    }
+
+.menu-text {
+    margin-top: 5px;
+    color: #495057; /* Dark gray text for menu items */
+    font-weight: bold;
+}
+
+.footer {
+    background-color: #347960; /* Footer background color matching header */
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+/* Remove underline from links */
+.menu-icon a {
+    text-decoration: none; /* This removes the underline */
+}
+
+    .menu-icon a:hover {
+        text-decoration: none; /* Ensure it's also removed when hovered */
+    }
+
+/* Container for the login page, centering everything */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+/* Card styling */
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #ffffff; /* White background for the card */
+}
+
+/* Center logo */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 150px;
+}
+
+/* Title styling */
+.login-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Input fields */
+.login-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc; /* Add border for input fields */
+    border-radius: 4px; /* Rounded corners for input fields */
+}
+
+/* Register link styling */
+.register-link {
+    text-align: center;
+    margin-top: 10px;
+}
+
+    .register-link a {
+        color: #007bff; /* Standard blue for the register link */
+        text-decoration: none;
+    }
+
+        .register-link a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+
+/* Button Styling */
+.login-form-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #347960; /* Green background for button */
+    color: white; /* White text on the button */
+    border: none;
+    border-radius: 4px; /* Rounded corners */
+    font-size: 16px;
+    cursor: pointer;
+}
+
+    .login-form-button:hover {
+        background-color: #5cb25d; /* Lighter green when hovered */
+    }
