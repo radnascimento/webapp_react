@@ -1,118 +1,113 @@
-import { FC, FormEvent, useState } from "react";
+﻿import { FC, FormEvent, useState, useEffect } from "react";
 import { Form, Input, Button, Card, Typography, notification } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { ReactComponent as Logo } from '../logo/logoipsum-346.svg'; // Import your SVG file here
-import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
+import { UserOutlined, LockOutlined, EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+import { ReactComponent as Logo } from '../logo/logoipsum-346.svg';
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '../components/AuthContext';
-
-import LoginService from '../services/loginService'; // Adjust the import path if needed
+import LoginService from '../services/LoginService';
+import { IpHelper } from '../utils/IpHelper';
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import Swal from 'sweetalert2';
 
 const { Title } = Typography;
 
-interface Values {
-    username: string;
-    password: string;
-    remember: boolean;
-}
-
 const Login: FC = () => {
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate(); // Initialize the navigate hook
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [ipAddress, setIpAddress] = useState("");
+    const navigate = useNavigate();
     const { login } = useAuth();
 
-    const onFinish = async (values: Values) => {
+    useEffect(() => {
+        const fetchIp = async () => {
+            try {
+                const ip = await IpHelper.getIpAddress();
+                setIpAddress(ip);
+            } catch (error) {
+                console.error("Failed to fetch IP address.", error);
+            }
+        };
+        fetchIp();
+    }, []);
+
+    const handleLoginSuccess = async (response) => {
+        console.log("Login Success:", response);
         setLoading(true);
+
         try {
-            const { token, user } = await LoginService.login(values.username, values.password); // Assume API returns token & user data
+            const token = response.credential;
+            /*const jsonPayload = JSON.parse(atob(token.split('.')[1]));*/
+            const { token: userToken, user } = await LoginService.googlelogin(token, ipAddress);
             notification.success({ message: 'Login successful!' });
-
-            // Use AuthContext's login method
-            login(token, user);
-
-            // Redirect to the Home page after successful login
+            login(userToken, user);
             navigate('/home');
         } catch (error) {
             notification.error({
                 message: 'Login failed',
                 description: error.message || 'An unexpected error occurred',
             });
-            console.error('Login error:', error); // Log error for better debugging
+            console.error('Login error:', error);
+
         } finally {
             setLoading(false);
         }
     };
 
-    const handleForgotPassword = (e: FormEvent) => {
-        e.preventDefault();
-        // Add logic for forgot password (e.g., redirect to password reset page)
-        console.log("Handle password recovery logic here");
+    const handleLoginFailure = (error) => {
+        console.error("Login Failed:", error);
     };
 
-    const handleRegister = (e: FormEvent) => {
-        e.preventDefault();
-        // Redirect to the register page
-        navigate('/register');
+    const onFinish = async (values) => {
+        setLoading(true);
+        try {
+            const { token, user } = await LoginService.login(values.username, values.password, ipAddress);
+            notification.success({ message: 'Login successful!' });
+            login(token, user);
+            navigate('/home');
+        } catch (error) {
+            notification.error({
+                message: 'Login failed',
+                description: error.message || 'An unexpected error occurred',
+            });
+            console.error('Login error:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="login-container">
             <Card className="login-card">
                 <div className="logo-container">
-                    <Logo className="logo" />
+                    {/* <Logo className="logo" /> */}
                 </div>
                 <div className="text-center">
                     <Title level={2} className="login-title">Login</Title>
                 </div>
-                <Form
-                    name="normal_login"
-                    className="login-form"
-                    initialValues={{ remember: true }}
-                    onFinish={onFinish}
-                >
-                    <Form.Item
-                        name="username"
-                        rules={[{ required: true, message: "Please input your Username!" }]}
-                    >
-                        <Input
-                            prefix={<UserOutlined className="site-form-item-icon" />}
-                            placeholder="Username"
-                            className="login-input"
-                        />
+                <Form name="login_form" className="login-form" onFinish={onFinish}>
+                    <Form.Item name="username" rules={[{ required: true, message: "Please input your Username!" }]}>
+                        <Input prefix={<UserOutlined />} placeholder="Username" />
                     </Form.Item>
-                    <Form.Item
-                        name="password"
-                        rules={[{ required: true, message: "Please input your Password!" }]}
-                    >
-                        <Input
-                            prefix={<LockOutlined className="site-form-item-icon" />}
-                            type="password"
+                    <Form.Item name="password" rules={[{ required: true, message: "Please input your Password!" }]}>
+                        <Input.Password
+                            prefix={<LockOutlined />}
                             placeholder="Password"
-                            className="login-input"
+                            iconRender={visible => visible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                            visibilityToggle={{
+                                visible: passwordVisible,
+                                onVisibleChange: setPasswordVisible
+                            }}
                         />
                     </Form.Item>
                     <Form.Item>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            className="login-form-button"
-                            block
-                            loading={loading}
-                        >
-                            Log in
-                        </Button>
-                        <div className="register-link">
-                            <a href="" onClick={handleRegister}>
-                                Don't have an account? Sign up
-                            </a>
-                        </div>
-                        {/* Forgot password link */}
-                        <div className="forgot-password-link">
-                            <a href="" onClick={handleForgotPassword}>
-                                Forgot password?
-                            </a>
-                        </div>
+                    <Button type="primary" className="login-form-button" htmlType="submit" block loading={loading}>
+                    Log in
+                    </Button>
                     </Form.Item>
                 </Form>
+                <GoogleOAuthProvider clientId="1098760243833-akesrh6fq895qka13h8ljovimtfgf620.apps.googleusercontent.com">
+                    <GoogleLogin onSuccess={handleLoginSuccess} onError={handleLoginFailure} useOneTap />
+                </GoogleOAuthProvider>
             </Card>
         </div>
     );

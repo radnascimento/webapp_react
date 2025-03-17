@@ -1,11 +1,14 @@
-// services/TopicService.js
+import { showSessionInvalidAlert } from '../utils/helper';
 
-const API_URL = 'http://reactservice.somee.com/api/topic';
+
+const API_URL = `${process.env.REACT_APP_API_URL.trim()}/topic`;
+
+
 
 // Fetch all topics
 const getTopics = async () => {
     try {
-        const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+        const token = sessionStorage.getItem('authToken'); // Retrieve the token from localStorage
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -17,10 +20,18 @@ const getTopics = async () => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`, // Include the token in the Authorization header
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch topics');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const data = await response.json();
@@ -34,7 +45,7 @@ const getTopics = async () => {
 // Fetch a single topic by its ID
 const getTopicById = async (id) => {
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -46,10 +57,18 @@ const getTopicById = async (id) => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch the topic');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const data = await response.json();
@@ -62,10 +81,10 @@ const getTopicById = async (id) => {
 
 // Save a new topic
 const saveTopic = async (topic) => {
-    
+
 
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -78,28 +97,39 @@ const saveTopic = async (topic) => {
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(topic),
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to save the topic');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const savedTopic = await response.json();
         return savedTopic;
     } catch (error) {
-        console.error('There was an error saving the topic!', error);
+        
         throw error;
     }
 };
 
 // Update an existing topic
 const updateTopic = async (id, topic) => {
+
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
         }
+        
+        //console.log(JSON.stringify(topic));
 
         const response = await fetch(`${API_URL}/${id}`, {
             method: 'PUT',
@@ -108,16 +138,24 @@ const updateTopic = async (id, topic) => {
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(topic),
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to update the topic');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const updatedTopic = await response.json();
         return updatedTopic;
     } catch (error) {
-        console.error('There was an error updating the topic!', error);
+        console.error('There was an error updating the topic! :(', error);
         throw error;
     }
 };
@@ -125,7 +163,7 @@ const updateTopic = async (id, topic) => {
 // Delete a topic
 const deleteTopic = async (id) => {
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -137,10 +175,18 @@ const deleteTopic = async (id) => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to delete the topic');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         return { success: true };

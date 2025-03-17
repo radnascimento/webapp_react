@@ -1,11 +1,12 @@
-// services/MaterialService.js
+import { showSessionInvalidAlert } from '../utils/helper';
 
-const API_URL = 'http://reactservice.somee.com/api/material'; // Replace with the actual API URL for materials
+const API_URL = `${process.env.REACT_APP_API_URL.trim()}/material`;
+
 
 // Fetch all materials
 const getMaterials = async () => {
     try {
-        const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+        const token = sessionStorage.getItem('authToken'); // Retrieve the token from localStorage
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -17,10 +18,18 @@ const getMaterials = async () => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`, // Include the token in the Authorization header
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch materials');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const data = await response.json();
@@ -34,7 +43,7 @@ const getMaterials = async () => {
 // Fetch a single material by its ID
 const getMaterialById = async (id) => {
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -46,10 +55,18 @@ const getMaterialById = async (id) => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch the material');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const data = await response.json();
@@ -63,7 +80,7 @@ const getMaterialById = async (id) => {
 // Save a new material
 const saveMaterial = async (material) => {
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -76,10 +93,18 @@ const saveMaterial = async (material) => {
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(material),
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to save the material');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const savedMaterial = await response.json();
@@ -93,7 +118,7 @@ const saveMaterial = async (material) => {
 // Update an existing material
 const updateMaterial = async (id, material) => {
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -106,10 +131,18 @@ const updateMaterial = async (id, material) => {
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(material),
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to update the material');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const updatedMaterial = await response.json();
@@ -123,7 +156,7 @@ const updateMaterial = async (id, material) => {
 // Delete a material
 const deleteMaterial = async (id) => {
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -135,10 +168,18 @@ const deleteMaterial = async (id) => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to delete the material');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         return { success: true };

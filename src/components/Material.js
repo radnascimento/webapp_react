@@ -70,7 +70,7 @@ const Materials = () => {
                                             <strong>Level:</strong> {material.level.name}
                                         </p>
                                         <p className="card-text">
-                                            <strong>Operation Date:</strong> {new Date(material.operationDate).toLocaleDateString()}
+                                            <strong>Date:</strong> {new Date(material.operationDate).toLocaleDateString()}
                                         </p>
                                         <p className="card-text">
                                             <strong>Material URL:</strong>
@@ -87,7 +87,7 @@ const Materials = () => {
                                         {/* Action Icons */}
                                         <div className="d-flex justify-content-end mt-3">
                                             {/* View Details Icon */}
-                                            <Link to={`/materialDetails/${material.idMaterial}`} className="text-success" style={{ fontSize: '20px' }}>
+                                            <Link to={`/EditMaterial/${material.idMaterial}`} className="text-success" style={{ fontSize: '20px' }}>
                                                 <FaEye /> {/* Eye Icon (View Details) */}
                                             </Link>
                                         </div>

@@ -1,8 +1,12 @@
-const API_URL = 'http://reactservice.somee.com/api/level';
+import { showSessionInvalidAlert } from '../utils/helper';
+
+
+const API_URL = `${process.env.REACT_APP_API_URL.trim()}/level`;
+
 
 const getLevels = async () => {
     try {
-        const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+        const token = sessionStorage.getItem('authToken'); // Retrieve the token from localStorage
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -14,10 +18,18 @@ const getLevels = async () => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`, // Include the token in the Authorization header
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const data = await response.json();
@@ -31,7 +43,7 @@ const getLevels = async () => {
 // Save a new level to the API
 const saveLevel = async (level) => {
     try {
-        const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+        const token = sessionStorage.getItem('authToken'); // Retrieve the token from localStorage
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -45,10 +57,18 @@ const saveLevel = async (level) => {
                 'Content-Type': 'application/json-patch+json',
             },
             body: JSON.stringify(level), // Send the level data as JSON
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to save the level');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const savedLevel = await response.json();

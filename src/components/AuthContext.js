@@ -11,11 +11,11 @@ export function AuthProvider({ children }) {
 
     // Check if token exists in localStorage on component mount
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (token) {
             setIsAuthenticated(true);
             // Optionally, fetch user data from an API or from token
-            const storedUser = JSON.parse(localStorage.getItem('user')); // You can store the user info along with token
+            const storedUser = JSON.parse(sessionStorage.getItem('user')); // You can store the user info along with token
             setUser(storedUser);
         }
     }, []);
@@ -62,11 +62,11 @@ export function AuthProvider({ children }) {
             setUser(userData);
 
             // Store the token and updated user data in localStorage
-            localStorage.setItem('token', token); // Store the token
-            localStorage.setItem('user', JSON.stringify(userData)); // Store updated user info with 'name'
+            sessionStorage.setItem('token', token); // Store the token
+            sessionStorage.setItem('user', JSON.stringify(userData)); // Store updated user info with 'name'
 
             // Optionally, you can store the username in localStorage
-            localStorage.setItem('userName', userName);
+            sessionStorage.setItem('userName', userName);
 
         } catch (error) {
             console.error("Error decoding token", error);
@@ -77,13 +77,13 @@ export function AuthProvider({ children }) {
     const logout = () => {
         setIsAuthenticated(false);
         setUser(null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
     };
 
     // Get token from localStorage
     const getToken = () => {
-        return localStorage.getItem('token');
+        return sessionStorage.getItem('token');
     };
 
     return (

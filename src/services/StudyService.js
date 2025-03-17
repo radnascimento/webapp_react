@@ -1,40 +1,119 @@
-// services/StudyService.js
+import pako from 'pako';
+import { convertKeysToLowerCase, showSessionInvalidAlert } from '../utils/helper';
 
-const API_URL = 'http://reactservice.somee.com/api/study';
 
-// Fetch all studies
-const getStudies = async () => {
+const API_URL = `${process.env.REACT_APP_API_URL.trim()}/study`;
+
+
+const getStudiescompressed = async ({ Page = 1, PageSize = 50 } = {}) => {
     try {
-        const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+
+        const token = sessionStorage.getItem('authToken'); // Retrieve the token from localStorage
 
         if (!token) {
             throw new Error('Authentication token is missing.');
         }
 
-        const response = await fetch(API_URL, {
+        const response = await fetch(`${API_URL}/compressed?page=${Page}&pageSize=${PageSize}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept-Encoding': 'gzip, br', // Request compressed data
                 Authorization: `Bearer ${token}`, // Include the token in the Authorization header
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch studies');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
-        const data = await response.json();
-        return data;
+        const compressedData = await response.arrayBuffer(); // Get binary data
+        const decompressedData = pako.inflate(compressedData, { to: 'string' }); // Decompress the GZIP data and convert it to a string
+
+        let dataArray;
+        try {
+            dataArray = JSON.parse(decompressedData); // Assuming the decompressed data is a valid JSON string
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
+        
+        return convertKeysToLowerCase(dataArray); // Parse JSON
+
     } catch (error) {
-        console.error('There was an error fetching the studies!', error);
+        console.error('There was an error fetching the compressed studies!', error);
         throw error;
+    }
+};
+
+
+
+// Fetch all studies
+const getStudies = async ({ Page = 1, PageSize = 50, Compressed = false } = {}) => {
+
+
+    if (Compressed) {
+        //return getStudiescompressed();
+
+        try
+        {
+            return await getStudiescompressed();
+            
+        } catch (error) {
+            return await getStudies();
+        }
+    }
+    else {
+
+        try {
+            const token = sessionStorage.getItem('authToken'); // Retrieve the token from localStorage
+
+            if (!token) {
+                throw new Error('Authentication token is missing.');
+            }
+
+            const response = await fetch(`${API_URL}?page=${Page}&pageSize=${PageSize}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                },
+
+            });
+
+            if (!response.ok) {
+
+                const errorData = await response.text();
+
+                if (errorData.includes("Session ID is not valid.")) {
+                    showSessionInvalidAlert();
+                }
+
+                throw new Error(errorData); // You can throw a custom error message
+            }
+
+            const data = await response.json();
+
+            return data;
+
+        } catch (error) {
+
+            throw error;
+        }
     }
 };
 
 // Fetch a single study by its ID
 const getStudyById = async (id) => {
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -46,10 +125,18 @@ const getStudyById = async (id) => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch the study');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const data = await response.json();
@@ -62,8 +149,9 @@ const getStudyById = async (id) => {
 
 // Save a new study
 const saveStudy = async (study) => {
+
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -81,10 +169,18 @@ const saveStudy = async (study) => {
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(study),
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to save the study');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const savedStudy = await response.json();
@@ -97,8 +193,9 @@ const saveStudy = async (study) => {
 
 // Update an existing study
 const updateStudy = async (id, study) => {
+    
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -109,6 +206,9 @@ const updateStudy = async (id, study) => {
             study.OperationDate = new Date().toISOString(); // Set current date if not specified
         }
 
+        console.log(JSON.stringify(study));
+        
+
         const response = await fetch(`${API_URL}/${id}`, {
             method: 'PUT',
             headers: {
@@ -116,10 +216,18 @@ const updateStudy = async (id, study) => {
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(study),
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to update the study');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         const updatedStudy = await response.json();
@@ -133,7 +241,7 @@ const updateStudy = async (id, study) => {
 // Delete a study
 const deleteStudy = async (id) => {
     try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
 
         if (!token) {
             throw new Error('Authentication token is missing.');
@@ -145,10 +253,18 @@ const deleteStudy = async (id) => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
+            
         });
 
         if (!response.ok) {
-            throw new Error('Failed to delete the study');
+
+            const errorData = await response.text();
+
+            if (errorData.includes("Session ID is not valid.")) {
+                showSessionInvalidAlert();
+            }
+
+            throw new Error(errorData); // You can throw a custom error message
         }
 
         return { success: true };
@@ -157,6 +273,7 @@ const deleteStudy = async (id) => {
         throw error;
     }
 };
+
 
 export default {
     getStudies,

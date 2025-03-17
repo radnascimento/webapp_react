@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FaLayerGroup, FaSave } from 'react-icons/fa'; // Import the icons for topics and save button
+﻿import React, { useState } from 'react';
+import { Link, useNavigate  } from 'react-router-dom';
+import { FaList, FaSave } from 'react-icons/fa'; // Import the icons for topics and save button
 import topicService from '../services/TopicService'; // Import the service that handles the topic API calls
+import Swal from "sweetalert2";
 
 const AddTopic = () => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,13 +21,34 @@ const AddTopic = () => {
 
         try {
             const savedTopic = await topicService.saveTopic(newTopic); // Call the saveTopic function from the service
-            setSuccessMessage(`Topic "${savedTopic.name}" has been saved successfully!`);
-            setName('');
-            setDescription('');
+
+            // Show success alert
+            Swal.fire({
+                title: "Sucesso!",
+                text: `Tópico foi salvo com sucesso!`,
+                icon: "success",
+                confirmButtonText: "OK",
+            }).then(() => {
+                // Clear input fields after confirmation
+                setName('');
+                setDescription('');
+                navigate('/topics');
+            });
+
         } catch (error) {
-            setError('Failed to save the topic');
+            setError("Failed to save the topic");
+
+            // Show error alert
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to save the topic.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
         }
     };
+
+    const maxLength = 100;
 
     return (
         <div className="container mt-5">
@@ -33,8 +56,8 @@ const AddTopic = () => {
                 {/* Header with icon and title */}
                 <div className="d-flex align-items-center justify-content-between mb-4">
                     <div className="d-flex align-items-center">
-                        <FaLayerGroup size={30} className="mr-3" /> {/* Icon for topics */}
-                        <h2 className="mb-0">New Topic</h2> {/* Title */}
+                        <FaList size={30} className="mr-3" /> {/* Icon for topics */}
+                        <h2 className="mb-0 heading-spacing">Novo Tópico</h2> {/* Title */}
                     </div>
                 </div>
 
@@ -42,15 +65,15 @@ const AddTopic = () => {
                 <div className="mb-3">
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item">
-                                <Link to="/home" className="text-decoration-none">Home</Link>
-                            </li>
-                            <li className="breadcrumb-item">
-                                <Link to="/topics" className="text-decoration-none">Topics Management</Link>
-                            </li>
-                            <li className="breadcrumb-item active" aria-current="page">
-                                Add New Topic
-                            </li>
+                            <div className="mb-3">
+                                <nav aria-label="breadcrumb">
+                                    <ol className="breadcrumb">
+                                        <li className="breadcrumb-item">
+                                            <Link to="/topics" className="text-decoration-none">Gerenciamento de Tópico</Link>
+                                        </li>
+                                    </ol>
+                                </nav>
+                            </div>
                         </ol>
                     </nav>
                 </div>
@@ -62,7 +85,7 @@ const AddTopic = () => {
                 {/* Form to Add Topic */}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="name">Topic Name</label>
+                        <label htmlFor="name">Nome do Tópico</label>
                         <input
                             type="text"
                             id="name"
@@ -70,16 +93,18 @@ const AddTopic = () => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
+                            maxLength={maxLength}
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="description">Description</label>
+                        <label htmlFor="description">Descrição</label>
                         <textarea
                             id="description"
                             className="form-control"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             required
+                            maxLength={maxLength}
                         ></textarea>
                     </div>
 
@@ -90,7 +115,7 @@ const AddTopic = () => {
                     <div className="form-group mt-4">
                         <button type="submit" className="btn btn-success btn-sm">
                             <FaSave size={20} className="mr-2" /> {/* Save Icon */}
-                            Save
+                            Salvar
                         </button>
                     </div>
                     <hr></hr>

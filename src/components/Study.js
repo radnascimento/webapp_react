@@ -1,145 +1,373 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBookOpen, FaEye } from 'react-icons/fa'; // Icons for studies and view
-import studyService from '../services/StudyService'; // Import the service that fetches the data
-import topicService from '../services/TopicService'; // Import the topic service to fetch topics
+import { FaExternalLinkAlt, FaCalendarAlt, FaBookOpen, FaEye, FaPencilAlt, FaPen, FaYoutube } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight , FaCircleLeft, FaForward , FaBackward } from 'react-icons/fa'; // Import icons for study, save, and navigation buttons
+import ModalWithIframe from "./ModalWithIframe";
+import studyService from '../services/StudyService';
+import topicService from '../services/TopicService';
+import studyReviewService from '../services/StudyReviewService';
+import SubscribeService from '../services/SubscribeService'; // Import the new SubscribeService
+import Modal from './Modal';
+import ModalYt from './ModalYt';
+
+
+
 
 const Studies = () => {
-    // State to store the list of studies, available topics, and loading/error states
     const [studies, setStudies] = useState([]);
-    const [filteredStudies, setFilteredStudies] = useState([]); // State for filtered studies
-    const [loading, setLoading] = useState(true); // Track loading state
-    const [error, setError] = useState(null); // Track any error
-    const [filterTopic, setFilterTopic] = useState(''); // State for filter selection
-    const [topics, setTopics] = useState([]); // State to store available topics
+    const [filteredStudies, setFilteredStudies] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [filterTopic, setFilterTopic] = useState('');
+    const [topics, setTopics] = useState([]);
+    const [selectedDate, setSelectedDate] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [studiesPerPage] = useState(6);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [reviews, setReviews] = useState([]);
+    const [subscriptions, setSubscriptions] = useState([]); // State for subscriptions
+    const [nameTopic, setTitle] = useState(false);
+    const [isModalAnswerOpen, setIsModalAnswerOpen] = useState(false);
+    const [url, setUrl] = useState(false);
 
-    // Fetch studies data using the service
+    const closeModalYt = () => {
+        setIsModalAnswerOpen(false);
+    };
+
+    const openModalYt = (study) => {
+
+        if (!study || Object.keys(study).length === 0) {
+            return;
+        }
+        setUrl(study.url);
+        setTitle(study.nameTopic);
+        setIsModalAnswerOpen(true);
+    };
+
+
+    const openModal = async (study) => {
+        const data = await studyReviewService.getReviewByStudyId(study.encIdStudy);
+        setReviews(data);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleSave = (e) => 
+    {
+        var ret = subscriptions.recordCount >= subscriptions.maxRecord;
+        return ret
+
+    }
+
+    const handleDateChange = (e) => {
+        const newSelectedDate = e.target.value;
+        setSelectedDate(newSelectedDate);
+
+        if (newSelectedDate === '') {
+            setFilteredStudies(studies);
+        } else {
+            setFilteredStudies(
+                studies.filter((study) => {
+                    const studyDate = new Date(study.operationDate).toISOString().split('T')[0];
+                    return studyDate.includes(newSelectedDate);
+                })
+            );
+        }
+    };
+
     useEffect(() => {
         const fetchStudies = async () => {
             try {
-                const data = await studyService.getStudies(); // Call the service to get the studies
-                setStudies(data); // Set the data to state
-                setFilteredStudies(data); // Initially, show all studies
+                const data = await studyService.getStudies({
+                    Page: 1,
+                    PageSize: 6,
+                    Compressed: true
+                });
+                setStudies(data);
+                setFilteredStudies(data);
             } catch (error) {
-                setError('Failed to fetch studies'); // Handle error if data fetch fails
+                setError('Failed to fetch studies');
             } finally {
-                setLoading(false); // Set loading to false once the request is complete
+                setLoading(false);
             }
         };
+
+
 
         const fetchTopics = async () => {
             try {
-                const topicData = await topicService.getTopics(); // Fetch topics using TopicService
-                setTopics(topicData); // Set topics from backend data
+                const topicData = await topicService.getTopics();
+
+                /*alert(JSON.stringify(topicData));*/
+
+
+
+                setTopics(topicData);
             } catch (error) {
-                setError('Failed to fetch topics'); // Handle error if data fetch fails
+                setError('Failed to fetch topics');
             }
         };
 
+        const fetchSubscriptions = async () => {
+            try {
+                const data = await SubscribeService.getSubscriptions();
+                setSubscriptions(data[0]);
+
+            } catch (error) {
+                console.error('Failed to fetch subscriptions:', error);
+            }
+        };
+        fetchSubscriptions();
+
         fetchStudies();
         fetchTopics();
-    }, []); // Empty dependency array means this effect runs once when the component mounts
+    }, []);
 
-    // Handle filter change
     const handleFilterChange = (e) => {
         const selectedTopic = e.target.value;
         setFilterTopic(selectedTopic);
 
-        // Filter studies based on selected topic
         if (selectedTopic === '') {
-            setFilteredStudies(studies); // If no topic selected, show all studies
+            setFilteredStudies(studies);
         } else {
             setFilteredStudies(
-                studies.filter((study) => study.topic.name.toLowerCase().includes(selectedTopic.toLowerCase()))
+                studies.filter((study) => study.nameTopic.toLowerCase().includes(selectedTopic.toLowerCase()))
             );
+        }
+    };
+
+    const indexOfLastStudy = currentPage * studiesPerPage;
+    const indexOfFirstStudy = indexOfLastStudy - studiesPerPage;
+    const currentStudies = filteredStudies.slice(indexOfFirstStudy, indexOfLastStudy);
+    const totalPages = Math.ceil(filteredStudies.length / studiesPerPage);
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(prevPage => prevPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(prevPage => prevPage - 1);
         }
     };
 
     return (
         <div className="container mt-5">
             <div className="bg-white p-4 rounded shadow-sm">
-                {/* Header with icon, filter, and button in the same row */}
                 <div className="d-flex align-items-center justify-content-between mb-4">
                     <div className="d-flex align-items-center">
-                        <FaBookOpen size={30} className="mr-3" /> {/* Icon for studies */}
-                        <h2 className="mb-0">Studies</h2> {/* Title */}
+                        <FaBookOpen size={30} className="mr-3" />
+                        <h2 className="mb-0 heading-spacing">Conteúdo</h2>
                     </div>
                     <div className="d-flex align-items-center">
-                        {/* Filter Dropdown - Aligned to the left of the button */}
-                        <select
-                            value={filterTopic}
-                            onChange={handleFilterChange}
-                            className="form-control form-control-sm mr-3"
-                            style={{ width: '200px' }}
-                        >
-                            <option value="">Filter by Topic</option>
-                            {topics.map((topic) => (
-                                <option key={topic.idTopic} value={topic.name}>
-                                    {topic.name}
-                                </option>
-                            ))}
-                        </select>
-                        &nbsp;&nbsp;
-                        {/* Add Study Button */}
-                        <Link to="/addStudy" className="btn btn-success btn-sm">
-                            <i className="fas fa-plus-circle"></i> {/* Plus icon for adding a study */}
-                        </Link>
+                        <Link 
+                        to="/addStudy" 
+                        className={`btn btn-success btn-sm ${handleSave} ? "disabled-link" : ""}`}
+                    >
+                        <i className="fas fa-plus-circle"></i>
+                    </Link>
+
                     </div>
                 </div>
 
-                {/* Breadcrumbs Tracker */}
                 <div className="mb-3">
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb">
                             <li className="breadcrumb-item">
-                                <Link to="/home" className="text-decoration-none">Home</Link>
+                                <Link to="/home" className="text-decoration-none">Página Inicial</Link>
                             </li>
-                            <li className="breadcrumb-item active" aria-current="page">
-                                Studies Management
-                            </li>
+                            {/*<li className="breadcrumb-item active" aria-current="page">*/}
+                            {/*    Gerenciamento de Conteúdo*/}
+                            {/*</li>*/}
                         </ol>
                     </nav>
                 </div>
 
-                {/* Loading/Error States */}
+                <div className="p-3 mb-4" style={{ backgroundColor: '#f2f2f2' }}>
+                    <div className="d-flex flex-column flex-md-row align-items-start">
+
+                        <div className="mb-3 mb-md-0 mr-md-3">
+
+                            <label htmlFor="filterTopic" className="form-label fw-semibold">
+                                Pesquisar por Tópico:
+                            </label>
+                            <select
+                                id="filterTopic"
+                                value={filterTopic}
+                                onChange={handleFilterChange}
+                                className="form-select form-select-sm w-auto"
+                            >
+                                <option value="">Selecione o Tópico</option>
+                                {topics.map((topic) => (
+                                    <option key={topic.encIdStudy} value={topic.name}>
+                                        {topic.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <br></br>
+
                 {loading && <div>Loading studies...</div>}
                 {error && <div className="alert alert-danger">{error}</div>}
 
-                {/* Studies Grid (Cards Layout) */}
                 {!loading && !error && (
                     <div className="row">
-                        {filteredStudies.map((study, index) => (
-                            <div key={study.idStudy} className="col-12 mb-4"> {/* Ensure each card is full-width on its row */}
-                                <div className="card shadow-sm">
-                                    <div className="card-body">
-                                        <h5 className="card-title">Date: {new Date(study.operationDate).toLocaleDateString()}</h5>
+                        {currentStudies.map((study, index) => (
 
-                                        <p className="card-text">
-                                            <strong>Topic: </strong>
-                                            <Link to={`/topic-details/${study.idTopic}`} className="text-decoration-none">
-                                                {study.topic.name}
-                                            </Link>
-                                        </p>
-                                        <p className="card-text">
-                                            <strong>Note:</strong> {study.note}
-                                        </p>
+                            <div key={study.idStudy} className="col-12">
+                            
+                                <div key={study.idStudy} >
 
-                                        {/* Action Icons (View Details) */}
-                                        <div className="d-flex justify-content-end mt-3">
-                                            <Link to={`/studyDetails/${study.idStudy}`} className="text-success" style={{ fontSize: '20px' }}>
-                                                <FaEye /> {/* View Details Icon */}
+                                    <div class="card shadow-sm">
+                                        <div class="card-body text-left">
+                                            <h6 class="card-title fw-bold">{study.nameTopic}</h6>
+                                            <Link
+                                                to={`/detailStudy/${study.encIdStudy}`}
+                                                style={{ color: "#006D77", textDecoration:"none" }}
+                                            >
+                                                <p class="card-text text-muted"> {study.description}</p>    
                                             </Link>
+
+                                            <ModalWithIframe /> {/* This listens for route changes */}
+
+                                        </div>
+
+                                        <div class="card-footer">
+                                            <div class="icon-group">
+                                                {!study.readOnly && (
+                                                    
+                                                        <Link
+                                                            to={`/EditStudy/${study.encIdStudy}`}
+                                                            style={{ fontSize: "20px", color: "#006D77" }}
+                                                        >
+                                                            <FaPencilAlt />
+                                                        </Link>
+                                                    
+                                                )}
+
+                                                <div>
+                                                    <FaCalendarAlt onClick={() => openModal(study)} style={{ cursor: "pointer", fontSize: "20px", color: "#006D77",  }} />
+                                                </div>
+                                                {study.url && (
+                                                <div>
+                                                        <span
+                                                            onClick={() => openModalYt(study)}
+                                                            style={{ cursor: "pointer" }}
+                                                        >
+                                                            <FaYoutube style={{ fontSize: "20px", color: "#006D77", }} />
+                                                        </span>
+
+                                                    </div>
+
+)}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
+
+                                <div className="card-body d-flex flex-column flex-grow-1">
+
+                                   
+                                    <div className="mt-auto">
+
+                                        <Modal isOpen={isModalOpen} onClose={closeModal}>
+                                            <h5 className="card-title">
+                                                Próxima Revisão
+                                            </h5>
+                                            <h6>
+                                                {study.description}
+                                            </h6>
+                                            <div className="container simple-timeline">
+                                                <div className="row">
+                                                    {reviews.map((review, index) => (
+                                                        <div key={index} className="col-md-6 mb-3">
+                                                            <div
+                                                                className={`timeline-item card p-3 shadow-sm ${review.nameStudyPC === "Read" ? "bg-success text-white" : ""
+                                                                    }`}
+                                                            >
+                                                                <div className="timeline-date">
+                                                                    {/*{new Date(review.operationDate).toLocaleDateString()} - {review.nameStudyPC}*/}
+
+                                                                    {new Date(review.operationDate).toLocaleDateString()}
+                                                                </div>
+                                                                {index !== reviews.length - 1 && <div className="timeline-line"></div>}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="modal-footer">
+                                                <button onClick={closeModal} style={{
+                                                    backgroundColor: "#347960",
+                                                    color: "#ffffff",
+                                                    border: "none",
+                                                    padding: "10px 20px",
+                                                    borderRadius: "5px",
+                                                    cursor: "pointer",
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    gap: "8px",
+                                                    fontSize: "12px",
+                                                    transition: "background-color 0.3s ease",
+                                                }}>
+                                                    Ok
+                                                </button>
+                                            </div>
+                                        </Modal>
+
+                                    </div>
+            <ModalYt
+                isOpen={isModalAnswerOpen}
+                onClose={closeModalYt}
+                nameTopic={nameTopic}
+                url={url}
+            />
+
+                                </div>
+                                <br></br>
                             </div>
+                           
                         ))}
                     </div>
                 )}
+
+                <div className="d-flex justify-content-between mt-4">
+                    <button
+                        onClick={handlePreviousPage}
+                        className="btn btn-secondary btn-sm"
+                        disabled={currentPage === 1}
+                    >
+                       <FaBackward /> 
+                    </button>
+                    <span>
+                        Página {currentPage} of {totalPages}
+                    </span>
+                    <button
+                        onClick={handleNextPage}
+                        className="btn btn-secondary btn-sm"
+                        disabled={currentPage === totalPages}
+                    >
+                        <FaForward  /> 
+                    </button>
+                </div>
             </div>
-            <br />
+
+            
+
         </div>
     );
 };
 
 export default Studies;
+
+

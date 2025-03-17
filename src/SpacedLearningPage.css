@@ -1,0 +1,53 @@
+.spaced-learning-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #347960;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 2rem;
+    color: #347960;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.intro {
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+strong {
+    color: #347960;
+}
+
+.benefits ul,
+.examples ul {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.examples li {
+    margin-bottom: 15px;
+}
