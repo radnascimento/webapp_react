@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaExternalLinkAlt, FaCalendarAlt, FaBookOpen, FaEye, FaPencilAlt, FaPen, faCircleLeft } from 'react-icons/fa';
-import { FaArrowLeft, FaArrowRight , FaCircleLeft } from 'react-icons/fa'; // Import icons for study, save, and navigation buttons
-
+import { FaSearch, FaCalendarAlt, FaBookOpen,  FaPencilAlt,  FaYoutube } from 'react-icons/fa';
+import { FaForward , FaBackward } from 'react-icons/fa'; // Import icons for study, save, and navigation buttons
+import ModalWithIframe from "./ModalWithIframe";
 import studyService from '../services/StudyService';
 import topicService from '../services/TopicService';
 import studyReviewService from '../services/StudyReviewService';
-import ReactMarkdown from "react-markdown";
-import Modal from './Modal';
-
-import { Calendar } from "antd";
+import SubscribeService from '../services/SubscribeService'; // Import the new SubscribeService
+import DateSelector from "./DateSelector"; // Import the DateSelector component
 import dayjs from "dayjs";
+import Modal from './Modal';
+import ModalYt from './ModalYt';
 
-const dateCellRender = (value: dayjs.Dayjs) => {
-    if (value.isSame(dayjs(review.operationDate), "day")) {
-      return <div className="timeline-date">{review.nameStudyPC}</div>;
-    }
-  };
 
   
+
+
 const Studies = () => {
     const [studies, setStudies] = useState([]);
     const [filteredStudies, setFilteredStudies] = useState([]);
@@ -31,6 +28,48 @@ const Studies = () => {
     const [studiesPerPage] = useState(6);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reviews, setReviews] = useState([]);
+    const [subscriptions, setSubscriptions] = useState([]); // State for subscriptions
+    const [nameTopic, setTitle] = useState(false);
+    const [isModalAnswerOpen, setIsModalAnswerOpen] = useState(false);
+    const [url, setUrl] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [date, setDate] = useState(dayjs().format("YYYY-MM-DD")); // Default to today
+
+   
+
+    const handleSearchChange = (e) => {
+        const searchTerm = e.target.value;
+        setSearchTerm(searchTerm);
+    
+        if (searchTerm === '') {
+            setFilteredStudies(studies); // If searchTerm is empty, show all studies
+        } else {
+            setFilteredStudies(
+                studies.filter((study) =>
+                    study.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    study.nameTopic.toLowerCase().includes(searchTerm.toLowerCase()) // Search in both fields
+                )
+            );
+        }
+        
+    };
+    
+
+
+    const closeModalYt = () => {
+        setIsModalAnswerOpen(false);
+    };
+
+    const openModalYt = (study) => {
+
+        if (!study || Object.keys(study).length === 0) {
+            return;
+        }
+        setUrl(study.url);
+        setTitle(study.nameTopic);
+        setIsModalAnswerOpen(true);
+    };
+
 
     const openModal = async (study) => {
         const data = await studyReviewService.getReviewByStudyId(study.encIdStudy);
@@ -41,6 +80,12 @@ const Studies = () => {
     const closeModal = () => {
         setIsModalOpen(false);
     };
+
+    const handleSave = (e) => 
+    {
+        var ret = subscriptions.recordCount >= subscriptions.maxRecord;
+        return ret
+    }
 
     const handleDateChange = (e) => {
         const newSelectedDate = e.target.value;
@@ -75,6 +120,9 @@ const Studies = () => {
             }
         };
 
+
+        
+
         const fetchTopics = async () => {
             try {
                 const topicData = await topicService.getTopics();
@@ -88,6 +136,17 @@ const Studies = () => {
                 setError('Failed to fetch topics');
             }
         };
+
+        const fetchSubscriptions = async () => {
+            try {
+                const data = await SubscribeService.getSubscriptions();
+                setSubscriptions(data[0]);
+
+            } catch (error) {
+                console.error('Failed to fetch subscriptions:', error);
+            }
+        };
+        fetchSubscriptions();
 
         fetchStudies();
         fetchTopics();
@@ -127,15 +186,34 @@ const Studies = () => {
         <div className="container mt-5">
             <div className="bg-white p-4 rounded shadow-sm">
                 <div className="d-flex align-items-center justify-content-between mb-4">
+
+                    
                     <div className="d-flex align-items-center">
                         <FaBookOpen size={30} className="mr-3" />
                         <h2 className="mb-0 heading-spacing">Conteúdo</h2>
                     </div>
+
+
                     <div className="d-flex align-items-center">
-                        <Link to="/addStudy" className="btn btn-success btn-sm">
+                        <Link 
+                            to={handleSave() ? "#" : "/addStudy"} 
+                            className={`btn btn-success btn-sm ${handleSave() ? "disabled-link" : ""}`} 
+                            onClick={(e) => handleSave() && e.preventDefault()} // Prevent navigation if disabled
+                        >
                             <i className="fas fa-plus-circle"></i>
                         </Link>
                     </div>
+
+
+                    {/* <div className="d-flex align-items-center">
+                        <Link 
+                        to="/addStudy" 
+                        className={`btn btn-success btn-sm ${handleSave} ? "disabled-link" : ""}`}
+                    >
+                        <i className="fas fa-plus-circle"></i>
+                    </Link>
+
+                    </div> */}
                 </div>
 
                 <div className="mb-3">
@@ -150,31 +228,42 @@ const Studies = () => {
                         </ol>
                     </nav>
                 </div>
-
                 <div className="p-3 mb-4" style={{ backgroundColor: '#f2f2f2' }}>
-                    <div className="d-flex flex-column flex-md-row align-items-start">
+            <div className="d-flex flex-column flex-md-row align-items-start">
+                <div className="mb-3 mb-md-0 mr-md-3 d-flex align-items-center w-100">
+                    {/* Select dropdown with reduced width */}
+                    {/* <select
+                        id="filterTopic"
+                        value={filterTopic}
+                        onChange={handleFilterChange}
+                        className="form-select form-select-sm w-auto mr-md-2" // Adjusted width to w-auto
+                    >
+                        <option value="">Selecione o Tópico</option>
+                        {topics.map((topic) => (
+                            <option key={topic.encIdStudy} value={topic.name}>
+                                {topic.name}
+                            </option>
+                        ))}
+                    </select> */}
 
-                        <div className="mb-3 mb-md-0 mr-md-3">
-
-                            <label htmlFor="filterTopic" className="form-label fw-semibold">
-                                Pesquisar por Tópico:
-                            </label>
-                            <select
-                                id="filterTopic"
-                                value={filterTopic}
-                                onChange={handleFilterChange}
-                                className="form-select form-select-sm w-auto"
-                            >
-                                <option value="">Selecione o Tópico</option>
-                                {topics.map((topic) => (
-                                    <option key={topic.encIdStudy} value={topic.name}>
-                                        {topic.name}
-                                    </option>
-                                ))}
-                            </select>
+                    {/* Search input */}
+                    <div className="input-group w-100 w-md-auto mt-2 mt-md-0">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text">
+                                <FaSearch /> {/* Font Awesome search icon */}
+                            </span>
                         </div>
+                        <input
+                            type="text"
+                            placeholder="Digite aqui a sua pesquisa"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            className="form-control form-control-sm"
+                        />
                     </div>
                 </div>
+            </div>
+        </div>
 
                 <br></br>
 
@@ -198,6 +287,9 @@ const Studies = () => {
                                             >
                                                 <p class="card-text text-muted"> {study.description}</p>    
                                             </Link>
+
+                                            <ModalWithIframe /> {/* This listens for route changes */}
+
                                         </div>
 
                                         <div class="card-footer">
@@ -214,8 +306,20 @@ const Studies = () => {
                                                 )}
 
                                                 <div>
-                                                    <FaCalendarAlt onClick={() => openModal(study)} style={{ fontSize: "20px", color: "#006D77",  }} />
+                                                    <FaCalendarAlt onClick={() => openModal(study)} style={{ cursor: "pointer", fontSize: "20px", color: "#006D77",  }} />
                                                 </div>
+                                                {study.url && (
+                                                <div>
+                                                        <span
+                                                            onClick={() => openModalYt(study)}
+                                                            style={{ cursor: "pointer" }}
+                                                        >
+                                                            <FaYoutube style={{ fontSize: "20px", color: "#006D77", }} />
+                                                        </span>
+
+                                                    </div>
+
+)}
                                             </div>
                                         </div>
                                     </div>
@@ -242,41 +346,37 @@ const Studies = () => {
                                                                 className={`timeline-item card p-3 shadow-sm ${review.nameStudyPC === "Read" ? "bg-success text-white" : ""
                                                                     }`}
                                                             >
-                                                                <div className="timeline-date">
-                                                                    
+                                                          <div className="row">
+                                                    <DateSelector selectedDate={new Date(review.operationDate).toLocaleDateString()} onDateChange={(newDate) => setDate(newDate ? newDate.format("YYYY-MM-DD") : null)} />
+                                                </div> 
 
-                                                                    {/* {new Date(review.operationDate).toLocaleDateString()} */}
-
-                                                                    
-                                                                    <Calendar dateCellRender={dateCellRender} />;
-                                                                </div>
                                                                 {index !== reviews.length - 1 && <div className="timeline-line"></div>}
                                                             </div>
                                                         </div>
                                                     ))}
+
                                                 </div>
+
+                                               
+
+                                                
                                             </div>
 
                                             <div className="modal-footer">
-                                                <button onClick={closeModal} style={{
-                                                    backgroundColor: "#347960",
-                                                    color: "#ffffff",
-                                                    border: "none",
-                                                    padding: "10px 20px",
-                                                    borderRadius: "5px",
-                                                    cursor: "pointer",
-                                                    display: "inline-flex",
-                                                    alignItems: "center",
-                                                    gap: "8px",
-                                                    fontSize: "12px",
-                                                    transition: "background-color 0.3s ease",
-                                                }}>
-                                                    Ok
+                                                <button onClick={closeModal} className='close-btn' >
+                                                    Fechar
                                                 </button>
                                             </div>
                                         </Modal>
 
                                     </div>
+            <ModalYt
+                isOpen={isModalAnswerOpen}
+                onClose={closeModalYt}
+                nameTopic={nameTopic}
+                url={url}
+            />
+
                                 </div>
                                 <br></br>
                             </div>
@@ -291,7 +391,7 @@ const Studies = () => {
                         className="btn btn-secondary btn-sm"
                         disabled={currentPage === 1}
                     >
-                       <FaArrowLeft /> Anterior
+                       <FaBackward /> 
                     </button>
                     <span>
                         Página {currentPage} of {totalPages}
@@ -301,10 +401,13 @@ const Studies = () => {
                         className="btn btn-secondary btn-sm"
                         disabled={currentPage === totalPages}
                     >
-                       Próxima <FaArrowRight  /> 
+                        <FaForward  /> 
                     </button>
                 </div>
             </div>
+
+            
+
         </div>
     );
 };

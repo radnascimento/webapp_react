@@ -16,7 +16,6 @@ const AddStudy = () => {
     const [error, setError] = useState(null); // State for error message
     const [successMessage, setSuccessMessage] = useState(''); // State for success message
     const [loading, setLoading] = useState(false); // State for loading
-    const [activeTab, setActiveTab] = useState("note");
     const navigate = useNavigate();
    
 
@@ -117,7 +116,7 @@ const AddStudy = () => {
         }
     };
 
-    const maxLength = 4000;
+    const maxLength = 1000;
 
     return (
         <div className="container mt-5">
@@ -143,121 +142,94 @@ const AddStudy = () => {
                 {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
                 <form onSubmit={handleSubmit}>
-            
-            <div className="form-group mb-3">
-                <select
-                    id="idTopic"
-                    className="form-control"
-                    value={idTopic}
-                    onChange={(e) => setIdTopic(e.target.value)}
-                    required
-                >
-                    <option value="">Selecione o Tópico</option>
-                    {topics.map((topic) => (
-                        <option key={topic.encId} value={topic.encId}>{topic.name}</option>
-                    ))}
-                </select>
-            </div>
+                   
 
-            
-            <div className="form-group mb-3">
-                <label htmlFor="description" className="fw-bold">
-                    Descrição (Max {100} caracteres, {100 - description.length} restante)
-                </label>
-                <input
-                    type="text"
-                    id="description"
-                    className="form-control"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    maxLength={100}
-                />
-            </div>
+                <div className="form-group mb-3">
+    <label htmlFor="idTopic" className="fw-bold">Selecione o Tópico:</label>
+    <select
+        id="idTopic"
+        className="form-control"
+        value={idTopic}
+        onChange={(e) => setIdTopic(e.target.value)}
+        required
+    >
+        <option value="">Selecione o Tópico</option>
+        {topics.map((topic) => (
+            <option key={topic.encId} value={topic.encId}>{topic.name}</option>
+        ))}
+    </select>
+</div>
 
-            
-            <div className="form-group mb-3">
-                <label htmlFor="url" className="fw-bold">
-                    Url (Max {100} caracteres, {100 - url.length} restante)
-                </label>
-                <input
-                    type="text"
-                    id="url"
-                    className="form-control"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    maxLength={100}
-                />
-            </div>
+<div className="form-group mb-3">
+    <label htmlFor="description" className="fw-bold">
+        Descrição (Max {100} caracteres, {100 - description.length} restante)
+    </label>
+    <input
+        type="text"
+        id="description"
+        className="form-control"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        required
+        maxLength={100}
+    />
+</div>
 
-            
-            <ul className="nav nav-tabs">
-                <li className="nav-item">
-                    <button
-                        className={`nav-link ${activeTab === "note" ? "active" : ""}`}
-                        onClick={() => setActiveTab("note")}
-                        type="button"
-                    >
-                        Conteúdo
-                    </button>
-                </li>
-                <li className="nav-item">
-                    <button
-                        className={`nav-link ${activeTab === "comment" ? "active" : ""}`}
-                        onClick={() => setActiveTab("comment")}
-                        type="button"
-                    >
-                        Comentário
-                    </button>
-                </li>
-            </ul>
+<div className="form-group mb-3">
+    <label htmlFor="url" className="fw-bold">
+        Url (Max {100} caracteres, {100 - url.length} restante)
+    </label>
+    <input
+        type="text"
+        id="url"
+        className="form-control"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        maxLength={100}
+    />
+</div>
 
-            
-            <div className="tab-content mt-3">
-                {activeTab === "note" && (
-                    <div className="form-group">
-                        <label htmlFor="note" className="fw-bold">
-                            Conteúdo (Max {maxLength} caracteres, {maxLength - note.length} restante)
-                        </label>
-                        <textarea
-                            id="note"
-                            className="form-control custom-textarea"
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
-                            required
-                            maxLength={4000}
-                        ></textarea>
-                    </div>
-                )}
+<div className="form-group mb-3">
+    <label htmlFor="note" className="fw-bold">
+        Conteúdo (Max {maxLength} caracteres, {maxLength - note.length} restante)
+    </label>
+    <textarea
+        id="note"
+        className="form-control custom-textarea"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        required
+        maxLength={1000}
+    ></textarea>
+</div>
 
-                {activeTab === "comment" && (
-                    <div className="form-group">
-                        <label htmlFor="comment" className="fw-bold">
-                            Comentário (Max {300} caracteres, {300 - comment.length} restante)
-                        </label>
-                        <textarea
-                            id="comment"
-                            className="form-control custom-textarea"
-                            value={comment}
-                            onChange={(e) => setcomment(e.target.value)}
-                            maxLength={300}
-                        ></textarea>
-                    </div>
-                )}
-            </div>
+<div className="form-group mb-3">
+    <label htmlFor="comment" className="fw-bold">
+        Comentário (Max {300} caracteres, {300 - comment.length} restante)
+    </label>
+    <textarea
+        id="comment"
+        className="form-control custom-textarea"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        maxLength={300}
+    ></textarea>
+</div>
 
-            
-            <div className="form-group mt-4">
-                <button
-                    type="submit"
-                    className="btn btn-success btn-sm"
-                    disabled={loading}
-                >
-                    <FaSave size={20} className="me-2" />
-                    {loading ? "Salvando..." : "Salvar"}
-                </button>
-            </div>
-        </form>
+{/* Save Button */}
+<div className="form-group mt-4">
+    <button
+        type="submit"
+        className="btn btn-success btn-sm"
+        disabled={loading} // Disable the button while loading
+    >
+        <FaSave size={20} className="mr-2" /> {/* Save Icon */}
+        {loading ? 'Salvando...' : 'Salvar'} {/* Show loading text */}
+    </button>
+</div>
+
+
+                </form>
             </div>
         </div>
     );

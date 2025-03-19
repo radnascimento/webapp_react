@@ -20,7 +20,7 @@ const DetailStudy = () => {
 
     const loadData = async () => {
         Swal.fire({
-            title: 'Por favor Aguarde',
+            title: 'Aguarde',
             text: 'O conteúdo está sendo carregado...',
             icon: 'info', // Adds an information icon
             allowOutsideClick: false, // Disables closing the alert by clicking outside
@@ -80,7 +80,6 @@ const DetailStudy = () => {
                 const data = await studyService.getStudyById(id);
                 setStudy(data);
                 setIdTopic(data.idTopic);
-                /*setOperationDate(data.operationDate);*/
                 setNote(data.note);
                 setTimeout(() => {
                     Swal.close();

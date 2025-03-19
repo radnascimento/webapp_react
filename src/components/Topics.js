@@ -74,7 +74,7 @@ const Topics = () => {
                     <div className="d-flex flex-column flex-md-row align-items-start">
                         {/* Filter Dropdown */}
                         <div className="mb-3 mb-md-0 mr-md-3">
-                                <label htmlFor="filterTopic" className="form-label fw-semibold">Pesquisar por Tópico:</label>
+                                {/* <label htmlFor="filterTopic" className="form-label fw-semibold">Pesquisar por Tópico:</label> */}
                             <select
                                 id="filterTopic"
                                 value={filterTopic}

@@ -40,7 +40,7 @@ import QuizAdmin from './components/admin/QuizAdmin';
 import LoginGoogle from './components/LoginGoogle';
 
 import FlipCard from './components/FlipCard';
-
+import DateSelector from './components/DateSelector';
 
 
 const App = () => {
@@ -100,7 +100,7 @@ const App = () => {
                     <Route path="/loginGoogle" element={<LoginGoogle />} />
 
                     <Route path="/flipcard" element={<FlipCard />} />
-
+                    <Route path="/DateSelector" element={<DateSelector />} />
                     
 
 

@@ -16,9 +16,30 @@ const EditTopic = () => {
     const [topics, setTopics] = useState([]);
     
 
+ const loadData = async () => {
+        Swal.fire({
+            title: 'Aguarde',
+            text: 'O conteúdo está sendo carregado...',
+            icon: 'info', // Adds an information icon
+            allowOutsideClick: false, // Disables closing the alert by clicking outside
+            onBeforeOpen: () => {
+                Swal.showLoading();
+            },
+            confirmButtonText: 'Ok', // Customize the button text
+            customClass: {
+                confirmButton: 'btn btn-success' // Apply the Bootstrap success button class
+            },
+            buttonsStyling: false,  // Disable SweetAlert2's default button styling
+        });
+    };
+
+
 
     // Fetch topics and levels on component mount
     useEffect(() => {
+
+        loadData();
+
         const fetchData = async () => {
             try {
 
@@ -27,8 +48,11 @@ const EditTopic = () => {
                 setDescription(data.description);
                 setIdTopic(data.encId);
                 setOperationDate(data.operationDate);
+
+                 setTimeout(() => {Swal.close();}, 1000);  
                 
             } catch (error) {
+                setTimeout(() => {Swal.close();}, 1000);  
                 setError('Failed to load topic');
             }
         };

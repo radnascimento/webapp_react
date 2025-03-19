@@ -107,16 +107,31 @@ const EditUser = () => {
                 </div>
 
                 <div className="bg-white p-4 rounded shadow-sm">
+
+
+               
+
+
+
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                             <label htmlFor="username" className="form-label">Nome de Usuário</label>
-                            <input type="text" id="username" className="form-control" value={username} disabled />
+                            <input type="text" id="username" className="form-control bg-light" value={username} disabled />
                         </div>
+
+                        
+                            <div className="mb-3">
+                                <label className="form-label">
+                                    Por aqui desde 
+                                </label>
+                                <div className="form-control bg-light">Março de 2025.</div>
+                            </div>
+
+
                         <div className="mb-3">
                             <label htmlFor="email" className="form-label">E-mail</label>
                             <input type="email" id="email" className="form-control" value={email} disabled={loading} />
                         </div>
-
                         {[{
                             label: 'Senha Atual',
                             state: currentPassword,
@@ -169,13 +184,21 @@ const EditUser = () => {
                     <h4>Dados da Assinatura</h4>
                     <div className="row">
                         <div className="col-md-6 mb-3">
+                            <label className="form-label">
+                                Tipo do Plano
+                            </label>
+                            <div className="form-control bg-light">Gratuito, acesso básico.</div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md-6 mb-3">
                             <label htmlFor="conteudocadastrado" className="form-label">
                                 Quantidade de Conteúdo Cadastrado
                             </label>
                             <input
                                 type="text"
                                 id="conteudocadastrado"
-                                className="form-control"
+                                className="form-control bg-light"
                                 value={subscriptions.recordCount}
                                 disabled
                             />
@@ -188,7 +211,7 @@ const EditUser = () => {
                             <input
                                 type="text"
                                 id="conteudocontrato"
-                                className="form-control"
+                                className="form-control bg-light"
                                 value={subscriptions.maxRecord} // Placeholder for content contracted
                                 disabled
                             />

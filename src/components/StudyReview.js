@@ -136,53 +136,6 @@ const Studies = () => {
     `).join('');
         return stars;
     };
-    
-    //const handleRevisado = async (study) => {
-
-
-    //    const result = await Swal.fire({
-    //        title: "Classifique seu conhecimento",
-    //        html: `<p>Qual é o seu nível de conhecimento em relação a este estudo?</p> ${getStars()}`,
-
-
-    //        icon: "warning",
-    //        showCancelButton: true,
-    //        confirmButtonColor: "#3085d6",
-    //        cancelButtonColor: "#d33",
-    //        confirmButtonText: "Ok, confirmar!",
-    //        cancelButtonText: "Cancelar",
-    //        customClass: {
-    //            confirmButton: 'btn btn-success',
-    //            cancelButton: 'btn btn-danger'
-    //        },
-    //        buttonsStyling: true,
-
-
-    //    });
-
-        //if (result.isConfirmed) {
-        //    const date = new Date(study.operationDate).toISOString().split('T')[0];
-        //    const updatedStudy = {
-        //        encIdStudyReview: study.encIdStudyReview,
-        //        reviewed: true,
-        //        operationDate: date,
-        //    };
-
-        //    await studyService.updateReview(study.encIdStudyReview, updatedStudy);
-
-        //    Swal.fire({
-        //        title: "Success!",
-        //        text: "Conteúdo revisado com sucesso!",
-        //        icon: "success",
-        //        confirmButtonText: "OK",
-        //    });
-
-        //    teste(study.encIdStudyReview);
-        //}
-
-
-
-    //};
 
     const handleRevisado = async (study) => {
         let rating;  // Initialize the rating variable in the correct scope
@@ -248,7 +201,7 @@ const Studies = () => {
                 await studyService.updateReview(study.encIdStudyReview, updatedStudy);
 
                 Swal.fire({
-                    title: "Success!",
+                    title: "Sucesso!",
                     text: "Conteúdo revisado com sucesso!",
                     icon: "success",
                     confirmButtonText: "OK",

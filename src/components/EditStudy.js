@@ -17,8 +17,30 @@ const EditStudy = () => {
     const [description, setDescription] = useState(''); // State for the note
     const [url, setUrl] = useState(''); // State for the note
     const [comment, setcomment] = useState(''); // State for the note
+    const [activeTab, setActiveTab] = useState("note");
+
+ const loadData = async () => {
+        Swal.fire({
+            title: 'Aguarde',
+            text: 'O conteúdo está sendo carregado...',
+            icon: 'info', // Adds an information icon
+            allowOutsideClick: false, // Disables closing the alert by clicking outside
+            onBeforeOpen: () => {
+                Swal.showLoading();
+            },
+            confirmButtonText: 'Ok', // Customize the button text
+            customClass: {
+                confirmButton: 'btn btn-success' // Apply the Bootstrap success button class
+            },
+            buttonsStyling: false,  // Disable SweetAlert2's default button styling
+        });
+    };
+
 
     useEffect(() => {
+
+        loadData();
+
         const fetchData = async () => {
             try {
                 const topicsData = await topicService.getTopics();
@@ -30,8 +52,14 @@ const EditStudy = () => {
                 setcomment(data.comment || ""); 
                 setDescription(data.description);
                 setUrl(data.url);
+                setTimeout(() => {
+                                    Swal.close();
+                                }, 1000);  
                 
             } catch (error) {
+                setTimeout(() => {
+                                    Swal.close();
+                                }, 1000);  
                 setError('Failed to load study');
             }
         };
@@ -89,9 +117,9 @@ const EditStudy = () => {
 
 
 
-    const maxLength = 1000;
+    const maxLength = 4000;
 
-    if (!study) return <div>Loading...</div>;
+    // if (!study) return <div>Loading...</div>;
 
     return (
         <div className="container mt-5">
@@ -125,7 +153,7 @@ const EditStudy = () => {
                 <form onSubmit={handleSubmit}>
 
                 <div className="form-group mb-3"> {/* Added margin-bottom */}
-                        <label htmlFor="idTopic" className="fw-bold">Selecione o Tópico</label> {/* Made bold */}
+                        {/* <label htmlFor="idTopic" className="fw-bold">Selecione o Tópico</label> Made bold */}
                         <select
                             id="idTopic"
                             className="form-control"
@@ -172,32 +200,63 @@ const EditStudy = () => {
     />
 </div>
 
-<div className="form-group mb-3">
-    <label htmlFor="note" className="fw-bold">
-        Conteúdo (Max {maxLength} caracteres, {maxLength - (note?.length || 0)} restante)
-    </label>
-    <textarea
-        id="note"
-        className="form-control custom-textarea"
-        value={note || ""}
-        onChange={(e) => setNote(e.target.value)}
-        required
-        maxLength={1000}
-    ></textarea>
+
+
+<ul className="nav nav-tabs">
+    <li className="nav-item">
+        <button
+            className={`nav-link ${activeTab === "note" ? "active" : ""}`}
+            onClick={() => setActiveTab("note")}
+            type="button"
+        >
+            Conteúdo
+        </button>
+    </li>
+    <li className="nav-item">
+        <button
+            className={`nav-link ${activeTab === "comment" ? "active" : ""}`}
+            onClick={() => setActiveTab("comment")}
+            type="button"
+        >
+            Comentário
+        </button>
+    </li>
+</ul>
+
+
+<div className="tab-content mt-3">
+    {activeTab === "note" && (
+        <div className="form-group">
+            <label htmlFor="note" className="fw-bold">
+                Conteúdo (Max {maxLength} caracteres, {maxLength - note.length} restante)
+            </label>
+            <textarea
+                id="note"
+                className="form-control custom-textarea"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                required
+                maxLength={4000}
+            ></textarea>
+        </div>
+    )}
+
+    {activeTab === "comment" && (
+        <div className="form-group">
+            <label htmlFor="comment" className="fw-bold">
+                Comentário (Max {300} caracteres, {300 - comment.length} restante)
+            </label>
+            <textarea
+                id="comment"
+                className="form-control custom-textarea"
+                value={comment}
+                onChange={(e) => setcomment(e.target.value)}
+                maxLength={300}
+            ></textarea>
+        </div>
+    )}
 </div>
 
-<div className="form-group mb-3">
-    <label htmlFor="comment" className="fw-bold">
-        Comentário (Max {300} caracteres, {300 - (comment?.length || 0)} restante)
-    </label>
-    <textarea
-        id="comment"
-        className="form-control custom-textarea"
-        value={comment || ""}
-        onChange={(e) => setcomment(e.target.value)}
-        maxLength={300}
-    ></textarea>
-</div>
 
 <div className="form-group mt-4">
     <button type="submit" className="btn btn-success btn-sm">
