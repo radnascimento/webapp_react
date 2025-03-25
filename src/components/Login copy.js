@@ -1,4 +1,4 @@
-import { FC, FormEvent, useState, useEffect } from "react";
+﻿import { FC, FormEvent, useState, useEffect } from "react";
 import { Form, Input, Button, Card, Typography, notification } from "antd";
 import { UserOutlined, LockOutlined, EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { ReactComponent as Logo } from '../logo/logoipsum-346.svg';
@@ -47,7 +47,7 @@ const Login: FC = () => {
                 description: error.message || 'An unexpected error occurred',
             });
             console.error('Login error:', error);
-            
+
         } finally {
             setLoading(false);
         }
@@ -79,7 +79,7 @@ const Login: FC = () => {
         <div className="login-container">
             <Card className="login-card">
                 <div className="logo-container">
-                    <Logo className="logo" />
+                    {/* <Logo className="logo" /> */}
                 </div>
                 <div className="text-center">
                     <Title level={2} className="login-title">Login</Title>
@@ -100,7 +100,9 @@ const Login: FC = () => {
                         />
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" block loading={loading}>Log in</Button>
+                    <Button type="primary" className="login-form-button" htmlType="submit" block loading={loading}>
+                    Log in
+                    </Button>
                     </Form.Item>
                 </Form>
                 <GoogleOAuthProvider clientId="1098760243833-akesrh6fq895qka13h8ljovimtfgf620.apps.googleusercontent.com">

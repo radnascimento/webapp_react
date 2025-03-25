@@ -1,5 +1,5 @@
 ﻿import React, { useState } from 'react';
-import { Link, useNavigate  } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaList, FaSave } from 'react-icons/fa'; // Import the icons for topics and save button
 import topicService from '../services/TopicService'; // Import the service that handles the topic API calls
 import Swal from "sweetalert2";
@@ -22,12 +22,17 @@ const AddTopic = () => {
         try {
             const savedTopic = await topicService.saveTopic(newTopic); // Call the saveTopic function from the service
 
-            // Show success alert
+
             Swal.fire({
                 title: "Sucesso!",
                 text: `Tópico foi salvo com sucesso!`,
                 icon: "success",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
+
             }).then(() => {
                 // Clear input fields after confirmation
                 setName('');

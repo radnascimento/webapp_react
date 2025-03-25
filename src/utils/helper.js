@@ -40,3 +40,9 @@ export function showSessionInvalidAlert() {
         }
     });
 }
+
+
+export const isValidYouTubeEmbedUrl = (url) => {
+    const pattern = /^https:\/\/www\.youtube\.com\/embed\/[a-zA-Z0-9_-]+$/;
+    return pattern.test(url);
+  };

@@ -1,7 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaCheck, FaYoutube, FaComments , FaThumbtack } from 'react-icons/fa';
-import { FaFrown, FaMeh, FaMehRollingEyes, FaSmile, FaGrinStars, FaStar } from 'react-icons/fa';
+import { FaCheck, FaYoutube, FaComments, FaThumbtack } from 'react-icons/fa';
 import studyService from '../services/StudyReviewService';
 import topicService from '../services/TopicService';
 import Modal from './Modal';
@@ -9,8 +8,10 @@ import ReactMarkdown from "react-markdown";
 import Swal from "sweetalert2";
 import Accordion from './Accordion'; // Import the Accordion component
 import ModalYt from './ModalYt';
-
-
+import WeeklyStatsModal from './WeeklyStatsModal'; // Import the modal compon
+import ReactDOMServer from 'react-dom/server'; // Import ReactDOMServer
+import AdBanner from "./AdBanner"; 
+import AdBannerLeft from "./AdBannerLeft"; 
 
 
 
@@ -27,11 +28,12 @@ const Studies = () => {
     const [isModalAnswerOpen, setIsModalAnswerOpen] = useState(false);
     const [url, setUrl] = useState(false);
     const [nameTopic, setTitle] = useState(false);
-    const [isFlipped, setIsFlipped] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState(null);
+    //const [isFlipped, setIsFlipped] = useState(false);
+    //const [selectedStatus, setSelectedStatus] = useState(null);
+    const [comment, setComment] = useState('');
 
     const closeModalYt = () => {
-        setIsModalAnswerOpen(false);
+        setIsModalOpen(false);
     };
 
     const openModalYt = (study) => {
@@ -41,9 +43,9 @@ const Studies = () => {
         }
         setUrl(study.url);
         setTitle(study.nameTopic);
-        setIsModalAnswerOpen(true);
+        setIsModalOpen(true);
     };
-  
+
 
     const teste = (id) => {
         setStudies((prevStudies) => prevStudies.filter(study => study.encIdStudyReview !== id));
@@ -59,25 +61,45 @@ const Studies = () => {
             let totalReviews = 0;
 
             if (data && data.length > 0) {
-                data.forEach((review) => {
-                    year = review.year;
-                    month = review.month;
-                    week = review.week;
-                    totalReviews += review.totalReviews;
-                });
+                // Assuming you want to use the first entry's year, month, and week
+                const firstReview = data[0];
+                year = firstReview.year;
+                month = firstReview.month;
+                week = firstReview.week;
+
+                // Sum up totalReviews from all entries
+                totalReviews = data.reduce((sum, review) => sum + review.totalReviews, 0);
             }
 
             Swal.fire({
-                title: 'Revisão Semanal',
-                html: `
-          <p><strong>Ano:</strong> ${year}</p>
-          <p><strong>Mês:</strong> ${month}</p>
-          <p><strong>Semana:</strong> ${week}</p>
-          <p><strong>Total:</strong> ${totalReviews}</p>
-        `,
-                icon: 'info',
+                /*title: 'Revisão Semanal',*/
+                html: ReactDOMServer.renderToString(
+                    <WeeklyStatsModal
+                        key={`${year}-${month}-${week}`} // Unique key for React
+                        year={year}
+                        month={month}
+                        week={week}
+                        totalReviews={totalReviews}
+                        onRefresh={openWeek} // Pass the refresh function
+                    />
+                ),
+                width: '80%',
                 confirmButtonText: 'Ok!',
                 confirmButtonColor: "#347960",
+                showConfirmButton: true,
+                customClass: {
+                    popup: 'swal-wide rounded-3',
+                    content: 'px-0', // Remove extra padding inside content
+
+                },
+                focusConfirm: false,
+                didOpen: () => {
+                    // Re-attach event listeners after the modal is opened
+                    const refreshButton = document.querySelector('.swal2-popup .btn-primary');
+                    if (refreshButton) {
+                        refreshButton.addEventListener('click', openWeek);
+                    }
+                },
             });
         } catch (error) {
             console.error('Error fetching weekly reviews:', error);
@@ -95,8 +117,9 @@ const Studies = () => {
         if (!study || Object.keys(study).length === 0) {
             return;
         }
-        
+
         setTitle(study.nameTopic);
+        setComment(study.commentStudy);
         setIsModalAnswerOpen(true);
     };
 
@@ -113,20 +136,20 @@ const Studies = () => {
         setUrl(study.url);
         setTitle(study.nameTopic);
         setIsModalOpen(true);
-        
+
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
-        
+
     };
 
     const closeModalAnswer = () => {
         setIsModalAnswerOpen(false);
     };
 
-    
-      
+
+
 
 
     // Function to generate stars
@@ -167,7 +190,7 @@ const Studies = () => {
                 stars.forEach(star => {
                     star.addEventListener('click', () => {
                         const clickedIndex = parseInt(star.getAttribute('data-index'));
-                        
+
                         // Light up the stars based on the clicked star's index
                         stars.forEach((s, i) => {
                             s.style.color = i < clickedIndex ? '#f1c40f' : 'gray';
@@ -185,7 +208,7 @@ const Studies = () => {
         });
 
 
-        
+
         if (rating !== undefined) {
 
 
@@ -217,8 +240,7 @@ const Studies = () => {
 
             console.log(`User selected a rating of ${rating}`);
         }
-        else if (result.isConfirmed)
-        {
+        else if (result.isConfirmed) {
             Swal.fire({
                 title: "Atenção!",
                 text: "Clique nas estrelas para determinar seu nível de conhecimento antes de confirmar a revisão!",
@@ -230,8 +252,8 @@ const Studies = () => {
                 buttonsStyling: true,
             });
         }
-        
-        
+
+
 
     };
 
@@ -275,10 +297,13 @@ const Studies = () => {
         }
     };
 
-    
-    return (
-        <div className="container mt-5">
 
+    return (
+
+        
+
+        <div className="container mt-5">
+            <AdBannerLeft />
             <div className="bg-white p-4 rounded shadow-sm">
                 <div className="d-flex align-items-center justify-content-between mb-4">
                     <div className="d-flex align-items-center">
@@ -302,16 +327,16 @@ const Studies = () => {
                     </nav>
                 </div>
 
-                
+
                 <div className="mb-4" style={{ backgroundColor: '#f2f2f2' }}>
 
                     {topics.map((topic) => {
-                        
+
                         const topicStudies = studies.filter(
                             (study) => study.nameTopic.toLowerCase() === topic.name.toLowerCase()
                         );
 
-                        
+
                         return topicStudies.length > 0 ? (
                             <Accordion
                                 key={topic.encIdTopic}
@@ -322,20 +347,17 @@ const Studies = () => {
                                         {/* <FontAwesomeIcon icon={faChevronDown} style={{ marginRight: "8px" }} /> */}
                                         <FaCheck style={{ marginRight: "8px" }}></FaCheck>
 
-                                        {topic.name} 
+                                        {topic.name}
                                     </>
                                 }
 
-                                hasContent={topicStudies.length > 0} 
+                                hasContent={topicStudies.length > 0}
                             >
                                 {topicStudies.map((study) => (
 
                                     <div key={study.encIdStudyReview} className="col-12">
 
-                                        
-
                                         <div class="card shadow-sm">
-                                        
 
                                             <div className="card-body">
                                                 <p className="card-text">
@@ -348,7 +370,7 @@ const Studies = () => {
                                                     <ReactMarkdown>{study.noteStudy}</ReactMarkdown>
                                                 </p>
 
-                                                
+
                                             </div>
                                             <div class="card-footer">
                                                 <div class="icon-group">
@@ -358,33 +380,33 @@ const Studies = () => {
                                                                 onClick={() => handleRevisado(study)}
                                                                 style={{ cursor: "pointer" }}
                                                             >
-                                                                <FaThumbtack  style={{ fontSize: "20px", color: "#006D77" }} />
+                                                                <FaThumbtack style={{ fontSize: "20px", color: "#006D77" }} />
                                                             </span>
                                                         </div>
                                                     )}
 
                                                     {study.commentStudy && (
-                                                    <div>
-                                                        <span
-                                                            onClick={() => openModalAnswer(study)}
-                                                            style={{ cursor: "pointer" }}
-                                                        >
-                                                            <FaComments style={{ fontSize: "20px", color: "#006D77" }} />
-                                                        </span>
-                                                    </div>
+                                                        <div>
+                                                            <span
+                                                                onClick={() => openModalAnswer(study)}
+                                                                style={{ cursor: "pointer" }}
+                                                            >
+                                                                <FaComments style={{ fontSize: "20px", color: "#006D77" }} />
+                                                            </span>
+                                                        </div>
                                                     )}
 
                                                     {study.url && (
 
-                                                    <div>
-                                                        <span
-                                                            onClick={() => openModalYt(study)}
-                                                            style={{ cursor: "pointer" }}
-                                                        >
-                                                            <FaYoutube style={{ fontSize: "20px", color: "#006D77", }} />
-                                                        </span>
+                                                        <div>
+                                                            <span
+                                                                onClick={() => openModalYt(study)}
+                                                                style={{ cursor: "pointer" }}
+                                                            >
+                                                                <FaYoutube style={{ fontSize: "20px", color: "#006D77", }} />
+                                                            </span>
 
-                                                    </div>
+                                                        </div>
                                                     )}
                                                 </div>
                                             </div>
@@ -394,78 +416,39 @@ const Studies = () => {
 
                                 ))}
                             </Accordion>
-                        ) : null; 
+                        ) : null;
                     })}
 
                 </div>
 
 
-                <Modal isOpen={isModalOpen} onClose={closeModal}>
+                <Modal isOpen={isModalAnswerOpen} onClose={closeModalAnswer}>
 
                     <h5 className="card-title">
-                        {nameTopic}
+                        <span>Comentário</span>
                     </h5>
 
 
                     <div class="video-container">
-                        <iframe
-                            src={url}
-                            loading="lazy"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            title="YT"
-                        ></iframe>
+                        {comment}
                     </div>
 
                     <div className="modal-footer">
-                        <button onClick={closeModal} className="close-button">
-                            Close
-                        </button>
+                        <button onClick={closeModalAnswer} className="close-btn">Fechar</button>
+
                     </div>
                 </Modal>
 
-
-                {/* <Modal isOpen={isModalAnswerOpen} onClose={closeModalAnswer}>
-
-                    <h5 className="card-title">
-                        {nameTopic} - <span>Respostas</span>
-                    </h5>
-
-
-                    <div class="video-container">
-                        <iframe
-                            src={url}
-                            loading="lazy"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            title="YT"
-                        ></iframe>
-                    </div>
-
-                    <div className="modal-footer">
-                        <button onClick={closeModalAnswer} className="close-button">
-                            Close
-                        </button>
-                    </div>
-                </Modal> */}
-
-<ModalYt
-                isOpen={isModalAnswerOpen}
-                onClose={closeModalYt}
-                nameTopic={nameTopic}
-                url={url}
-            />
-
-
-
-
-
+                <ModalYt
+                    isOpen={isModalOpen}
+                    onClose={closeModalYt}
+                    nameTopic={nameTopic}
+                    url={url}
+                />
                 <br></br>
             </div>
+
+            <AdBanner />
         </div>
     );
 };

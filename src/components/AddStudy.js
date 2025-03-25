@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom'; // Import usePa
 import { FaBook, FaSave } from 'react-icons/fa'; // Import the icon for study and save button
 import studyService from '../services/StudyService'; // Import the service that handles study-related requests
 import topicService from '../services/TopicService'; // Assuming you have this for fetching topics or levels
+import { isValidYouTubeEmbedUrl } from '../utils/helper';
+
 import Swal from "sweetalert2";
 
 const AddStudy = () => {
@@ -19,6 +21,18 @@ const AddStudy = () => {
     const [activeTab, setActiveTab] = useState("note");
     const navigate = useNavigate();
    
+
+    const handleChange = (e) => {
+        const newUrl = e.target.value;
+        setUrl(newUrl);
+    
+        // Validate the URL
+        if (newUrl && !isValidYouTubeEmbedUrl(newUrl)) {
+          setError("URL de incorporação do YouTube inválida. Deve estar no formato: https://www.youtube.com/embed/{videoId}");
+        } else {
+          setError("");
+        }
+      };
 
 
 
@@ -185,7 +199,8 @@ const AddStudy = () => {
                     id="url"
                     className="form-control"
                     value={url}
-                    onChange={(e) => setUrl(e.target.value)}
+                    // onChange={(e) => setUrl(e.target.value)}
+                    onChange={handleChange}
                     maxLength={100}
                 />
             </div>

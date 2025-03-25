@@ -4,7 +4,7 @@ const BASE_URL = process.env.REACT_APP_API_URL.trim();
 
 class LoginService {
 
-    static async googlelogin(token, clientip)
+    static async googlelogin(token, clientip, recaptcha)
     {
         
 
@@ -15,7 +15,7 @@ class LoginService {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ token, clientip }),
+                body: JSON.stringify({ token, clientip, recaptcha: recaptcha }),
             });
 
             if (!response.ok) {
@@ -46,7 +46,7 @@ class LoginService {
     }
 
 
-    static async login(userName, password, clientip) {
+    static async login(userName, password, clientip, token) {
 
         try {
             const response = await fetch(`${BASE_URL}/Authentication/Login`, {
@@ -55,7 +55,7 @@ class LoginService {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ userName, password, clientip }),
+                body: JSON.stringify({ userName, password, clientip, recaptcha:token }),
             });
 
             if (!response.ok) {

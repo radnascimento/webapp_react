@@ -17,7 +17,83 @@ const Login: FC = () => {
     const [ipAddress, setIpAddress] = useState("");
     const navigate = useNavigate();
     const { login } = useAuth();
+    const [captchaToken, setCaptchaToken] = useState("");
 
+    // Load reCAPTCHA script on component mount
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://www.google.com/recaptcha/api.js?render=6LcWofsqAAAAAHHF2tLREYKb08bKY-E4GqaiAMxs';
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
+    // Function to execute reCAPTCHA and get the token
+    const getRecaptchaToken = async () => {
+        return new Promise((resolve, reject) => {
+            if (window.grecaptcha) {
+                window.grecaptcha.ready(() => {
+                    window.grecaptcha
+                        .execute('6LcWofsqAAAAAHHF2tLREYKb08bKY-E4GqaiAMxs', { action: 'login' })
+                        .then((token) => {
+                            setCaptchaToken(token);
+                            resolve(token);
+
+                        })
+                        .catch((error) => {
+                            console.error("reCAPTCHA error:", error);
+                            reject(null);
+                        });
+                });
+            } else {
+                reject(new Error('reCAPTCHA script not loaded'));
+            }
+        });
+    };
+
+    // Handle form submission
+    const onFinish = async (values) => {
+        setLoading(true);
+
+        try {
+            // Get reCAPTCHA token
+            const token = await getRecaptchaToken();
+            if (!token) {
+                notification.error({ message: 'Please complete the reCAPTCHA' });
+                return;
+            }
+
+
+
+
+            // Call your login service with username, password, IP, and reCAPTCHA token
+            const { token: userToken, user } = await LoginService.login(
+                values.username,
+                values.password,
+                ipAddress,
+                token // Pass the reCAPTCHA token to your backend
+            );
+
+            // Notify success and navigate to home
+            notification.success({ message: 'Login successful!' });
+            login(userToken, user);
+            navigate('/home');
+        } catch (error) {
+            notification.error({
+                message: 'Login failed',
+                description: error.message || 'An unexpected error occurred',
+            });
+            console.error('Login error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch IP address on component mount
     useEffect(() => {
         const fetchIp = async () => {
             try {
@@ -30,14 +106,24 @@ const Login: FC = () => {
         fetchIp();
     }, []);
 
+    // Handle Google login success
     const handleLoginSuccess = async (response) => {
         console.log("Login Success:", response);
         setLoading(true);
 
         try {
+
+
+            const recaptcha = await getRecaptchaToken();
+
+            if (!recaptcha) {
+                notification.error({ message: 'Please complete the reCAPTCHA' });
+                return;
+            }
+
+
             const token = response.credential;
-            /*const jsonPayload = JSON.parse(atob(token.split('.')[1]));*/
-            const { token: userToken, user } = await LoginService.googlelogin(token, ipAddress);
+            const { token: userToken, user } = await LoginService.googlelogin(token, ipAddress, recaptcha);
             notification.success({ message: 'Login successful!' });
             login(userToken, user);
             navigate('/home');
@@ -47,32 +133,14 @@ const Login: FC = () => {
                 description: error.message || 'An unexpected error occurred',
             });
             console.error('Login error:', error);
-
         } finally {
             setLoading(false);
         }
     };
 
+    // Handle Google login failure
     const handleLoginFailure = (error) => {
         console.error("Login Failed:", error);
-    };
-
-    const onFinish = async (values) => {
-        setLoading(true);
-        try {
-            const { token, user } = await LoginService.login(values.username, values.password, ipAddress);
-            notification.success({ message: 'Login successful!' });
-            login(token, user);
-            navigate('/home');
-        } catch (error) {
-            notification.error({
-                message: 'Login failed',
-                description: error.message || 'An unexpected error occurred',
-            });
-            console.error('Login error:', error);
-        } finally {
-            setLoading(false);
-        }
     };
 
     return (
@@ -100,9 +168,9 @@ const Login: FC = () => {
                         />
                     </Form.Item>
                     <Form.Item>
-                    <Button type="primary" className="login-form-button" htmlType="submit" block loading={loading}>
-                    Log in
-                    </Button>
+                        <Button type="primary" className="login-form-button" htmlType="submit" block loading={loading}>
+                            Log in
+                        </Button>
                     </Form.Item>
                 </Form>
                 <GoogleOAuthProvider clientId="1098760243833-akesrh6fq895qka13h8ljovimtfgf620.apps.googleusercontent.com">

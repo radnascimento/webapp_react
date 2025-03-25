@@ -72,13 +72,17 @@ const EditTopic = () => {
 
         try {
             await topicService.updateTopic(idTopic, updatedTopic);
-
-            // Show success alert
+          
             Swal.fire({
                 title: "Sucesso!",
                 text: "Tópico atualizado com sucesso!",
                 icon: "success",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
+
             }).then(() => {
                 // Navigate after user confirms
                 navigate('/topics');

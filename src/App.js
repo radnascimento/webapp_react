@@ -40,7 +40,12 @@ import QuizAdmin from './components/admin/QuizAdmin';
 import LoginGoogle from './components/LoginGoogle';
 
 import FlipCard from './components/FlipCard';
-import DateSelector from './components/DateSelector';
+import Help from './components/Help';
+import TermsOfUsePage from './components/TermsOfUsePage';
+
+
+
+
 
 
 const App = () => {
@@ -100,10 +105,9 @@ const App = () => {
                     <Route path="/loginGoogle" element={<LoginGoogle />} />
 
                     <Route path="/flipcard" element={<FlipCard />} />
-                    <Route path="/DateSelector" element={<DateSelector />} />
+                    <Route path="/termsOfUsePage" element={<TermsOfUsePage />} />
+                    <Route path="/help" element={<Help />} />
                     
-
-
                     {/* Public Routes */}
                     <Route path="/register" element={<RegisterUser />} />
                     {/* Add other routes as needed */}

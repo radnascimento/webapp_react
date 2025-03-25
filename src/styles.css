@@ -348,3 +348,39 @@ footer.footer {
         transition: background 0.3s ease;
     }
 
+    .save-btn {
+        background-color: #006D77;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+    }
+/* 
+    .grecaptcha-badge {
+        visibility: visible !important;
+      } */
+
+
+/* Default: Left-side ad for larger screens */
+.left-ad {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 160px; /* Standard ad width */
+    height: 600px; /* Standard skyscraper ad */
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Hide ad on screens smaller than 768px */
+@media (max-width: 768px) {
+    .left-ad {
+        display: none;
+    }
+}

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import studyService from '../services/StudyService';
 import topicService from '../services/TopicService';
 import {  FaSave, FaBookOpen } from 'react-icons/fa';
+import { isValidYouTubeEmbedUrl } from '../utils/helper';
 import Swal from "sweetalert2";
 
 const EditStudy = () => {
@@ -18,6 +19,19 @@ const EditStudy = () => {
     const [url, setUrl] = useState(''); // State for the note
     const [comment, setcomment] = useState(''); // State for the note
     const [activeTab, setActiveTab] = useState("note");
+
+  const handleChange = (e) => {
+        const newUrl = e.target.value;
+        setUrl(newUrl);
+    
+        // Validate the URL
+        if (newUrl && !isValidYouTubeEmbedUrl(newUrl)) {
+          setError("URL de incorporação do YouTube inválida. Deve estar no formato: https://www.youtube.com/embed/{videoId}");
+        } else {
+          setError("");
+        }
+      };
+
 
  const loadData = async () => {
         Swal.fire({
@@ -87,16 +101,16 @@ const EditStudy = () => {
             await studyService.updateStudy(idStudy, updatedStudy);
             
 
-            // Show success alert
-            Swal.fire({
-                title: "Sucesso!",
-                text: "Conteúdo atualizado com sucesso!",
-                icon: "success",
-                confirmButtonText: "OK",
-                customClass: {
-                    confirmButton: "btn-success", // Add your class here
-                },
-                buttonsStyling: true
+          Swal.fire({
+              title: "Sucesso!",
+              text: "Conteúdo atualizado com sucesso!",
+              icon: "success",
+              confirmButtonText: "OK",
+              customClass: {
+                  confirmButton: "btn btn-success", // Add your class here
+              },
+              buttonsStyling: true
+
             }).then(() => {
                 navigate("/study"); // Redirect after confirmation
             });
@@ -195,7 +209,8 @@ const EditStudy = () => {
         id="url"
         className="form-control"
         value={url || ""}
-        onChange={(e) => setUrl(e.target.value)}
+        // onChange={(e) => setUrl(e.target.value)}
+        onChange={handleChange}
         maxLength={100}
     />
 </div>

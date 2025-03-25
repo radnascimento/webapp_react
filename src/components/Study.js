@@ -305,9 +305,9 @@ const Studies = () => {
                                                     
                                                 )}
 
-                                                <div>
+                                                {/* <div>
                                                     <FaCalendarAlt onClick={() => openModal(study)} style={{ cursor: "pointer", fontSize: "20px", color: "#006D77",  }} />
-                                                </div>
+                                                </div> */}
                                                 {study.url && (
                                                 <div>
                                                         <span
@@ -338,31 +338,27 @@ const Studies = () => {
                                             <h6>
                                                 {study.description}
                                             </h6>
-                                            <div className="container">
-                                                
-                                            {reviews.map((review, index) => {
-                                                    // alert(review.operationDate); // Log the original date for debugging
+                                            <div className="container simple-timeline">
+                                                <div className="row">
+                                                    {reviews.map((review, index) => (
+                                                        <div key={index} className="col-md-6 mb-3">
+                                                            <div
+                                                                className={`timeline-item card p-3 shadow-sm ${review.nameStudyPC === "Read" ? "bg-success text-white" : ""
+                                                                    }`}
+                                                            >
+                                                          <div className="row">
+                                                    <DateSelector selectedDate={new Date(review.operationDate).toLocaleDateString()} onDateChange={(newDate) => setDate(newDate ? newDate.format("YYYY-MM-DD") : null)} />
+                                                </div> 
 
-                                                    const date = dayjs(review.operationDate); 
-
-                                                    // alert(date);
-
-                                                    return (
-                                                        <div key={index}>
-                                                        <DateSelector
-                                                            selectedDate={date} // Ensure it's a dayjs object
-                                                            onDateChange={(newDate) => {
-                                                            // Log the new date after it's selected
-                                                            console.log("New Selected Date:", newDate ? newDate.format("YYYY-MM-DD") : null);
-                                                            setDate(newDate ? newDate.format("YYYY-MM-DD") : null);
-                                                            }}
-                                                        />
+                                                                {index !== reviews.length - 1 && <div className="timeline-line"></div>}
+                                                            </div>
                                                         </div>
-                                                    );
-                                                    })}
+                                                    ))}
 
+                                                </div>
 
-                                              
+                                               
+
                                                 
                                             </div>
 
