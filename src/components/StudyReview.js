@@ -8,9 +8,11 @@ import ReactMarkdown from "react-markdown";
 import Swal from "sweetalert2";
 import Accordion from './Accordion'; // Import the Accordion component
 import ModalYt from './ModalYt';
-import WeeklyStatsModal from './WeeklyStatsModal'; // Import the modal compon
+import ModalWeeklyStats from './ModalWeeklyStats';
+
+import WeeklyStatsModal from './ModalWeeklyStats'; // Import the modal compon
 import ReactDOMServer from 'react-dom/server'; // Import ReactDOMServer
-import AdBanner from "./AdBanner"; 
+
 import AdBannerLeft from "./AdBannerLeft"; 
 
 
@@ -28,9 +30,37 @@ const Studies = () => {
     const [isModalAnswerOpen, setIsModalAnswerOpen] = useState(false);
     const [url, setUrl] = useState(false);
     const [nameTopic, setTitle] = useState(false);
-    //const [isFlipped, setIsFlipped] = useState(false);
-    //const [selectedStatus, setSelectedStatus] = useState(null);
     const [comment, setComment] = useState('');
+    const [isModalWeekOpen, setIsModalWeekOpen] = useState(false);
+
+    const [weekcompleted, setWeekCompleted] = useState(false);
+    const [weekpPending, setWeekPending] = useState(false);
+
+
+
+
+    const closeModalWeek = () => {
+        setIsModalWeekOpen(false);
+    };
+
+    const openWeek = async (study) => {
+
+        try {
+            const data = await studyService.getReviewsWeekly();
+
+            // alert(JSON.stringify(data));
+
+            setWeekCompleted(data.totalReviewsCompleted);
+            setWeekPending(data.totalReviewsPending);
+            setIsModalWeekOpen(true);
+
+
+        } catch (error) {
+            setError('Failed to fetch studies');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const closeModalYt = () => {
         setIsModalOpen(false);
@@ -52,66 +82,6 @@ const Studies = () => {
         setFilteredStudies((prevFiltered) => prevFiltered.filter(study => study.encIdStudyReview !== id));
     };
 
-    const openWeek = async () => {
-        try {
-            const data = await studyService.getReviewsWeekly();
-            let year = 0;
-            let month = 0;
-            let week = 0;
-            let totalReviews = 0;
-
-            if (data && data.length > 0) {
-                // Assuming you want to use the first entry's year, month, and week
-                const firstReview = data[0];
-                year = firstReview.year;
-                month = firstReview.month;
-                week = firstReview.week;
-
-                // Sum up totalReviews from all entries
-                totalReviews = data.reduce((sum, review) => sum + review.totalReviews, 0);
-            }
-
-            Swal.fire({
-                /*title: 'Revisão Semanal',*/
-                html: ReactDOMServer.renderToString(
-                    <WeeklyStatsModal
-                        key={`${year}-${month}-${week}`} // Unique key for React
-                        year={year}
-                        month={month}
-                        week={week}
-                        totalReviews={totalReviews}
-                        onRefresh={openWeek} // Pass the refresh function
-                    />
-                ),
-                width: '80%',
-                confirmButtonText: 'Ok!',
-                confirmButtonColor: "#347960",
-                showConfirmButton: true,
-                customClass: {
-                    popup: 'swal-wide rounded-3',
-                    content: 'px-0', // Remove extra padding inside content
-
-                },
-                focusConfirm: false,
-                didOpen: () => {
-                    // Re-attach event listeners after the modal is opened
-                    const refreshButton = document.querySelector('.swal2-popup .btn-primary');
-                    if (refreshButton) {
-                        refreshButton.addEventListener('click', openWeek);
-                    }
-                },
-            });
-        } catch (error) {
-            console.error('Error fetching weekly reviews:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'Failed to fetch weekly review data.',
-                icon: 'error',
-                confirmButtonText: 'Okay',
-            });
-        }
-    };
-
     const openModalAnswer = (study) => {
 
         if (!study || Object.keys(study).length === 0) {
@@ -123,36 +93,10 @@ const Studies = () => {
         setIsModalAnswerOpen(true);
     };
 
-
-
-    const openModal = (study) => {
-        if (!study || Object.keys(study).length === 0) {
-            return;
-        }
-
-        if (!study || !study.url || study.url.trim().length === 0) {
-            return;
-        }
-        setUrl(study.url);
-        setTitle(study.nameTopic);
-        setIsModalOpen(true);
-
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-
-    };
-
     const closeModalAnswer = () => {
         setIsModalAnswerOpen(false);
     };
 
-
-
-
-
-    // Function to generate stars
     const getStars = () => {
         const stars = [1, 2, 3, 4, 5].map(index => `
         <span class="star" data-index="${index}" style="font-size: 30px; cursor: pointer; color: gray;">&#9733;</span>
@@ -163,7 +107,6 @@ const Studies = () => {
     const handleRevisado = async (study) => {
         let rating;  // Initialize the rating variable in the correct scope
 
-        // Display the Swal modal with stars
         const result = await Swal.fire({
             title: "Classifique seu conhecimento",
             html: `<p>Qual é o seu nível de conhecimento em relação a este estudo?</p> ${getStars()}`,
@@ -340,13 +283,10 @@ const Studies = () => {
                         return topicStudies.length > 0 ? (
                             <Accordion
                                 key={topic.encIdTopic}
-                                // title={topic.name}
-
                                 title={
                                     <>
                                         {/* <FontAwesomeIcon icon={faChevronDown} style={{ marginRight: "8px" }} /> */}
                                         <FaCheck style={{ marginRight: "8px" }}></FaCheck>
-
                                         {topic.name}
                                     </>
                                 }
@@ -445,10 +385,23 @@ const Studies = () => {
                     nameTopic={nameTopic}
                     url={url}
                 />
+
+
+                <ModalWeeklyStats
+                    isOpen={isModalWeekOpen}
+                    onClose={closeModalWeek}
+                    year={2025}
+                    month={3}
+                    week={3}
+                    totalReviews={weekcompleted}
+                    weekpPending={weekpPending}
+                />
+
+
                 <br></br>
             </div>
 
-            <AdBanner />
+            
         </div>
     );
 };

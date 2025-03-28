@@ -55,7 +55,11 @@ const EditUser = () => {
                 title: 'Atenção',
                 text: 'Os campos [Nova Senha] e [Confirmar Nova Senha] não conferem!',
                 icon: 'error',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
             return;
         }
@@ -68,7 +72,11 @@ const EditUser = () => {
                 title: 'Update Successful',
                 text: 'Your details have been updated successfully!',
                 icon: 'success',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
 
             setCurrentPassword('');
@@ -79,7 +87,11 @@ const EditUser = () => {
                 title: 'Update Failed',
                 text: error.message || 'An error occurred while updating your details',
                 icon: 'error',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
         } finally {
             setLoading(false);

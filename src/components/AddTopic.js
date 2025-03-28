@@ -49,6 +49,10 @@ const AddTopic = () => {
                 text: "Failed to save the topic.",
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
         }
     };
@@ -89,8 +93,10 @@ const AddTopic = () => {
 
                 {/* Form to Add Topic */}
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="name">Nome do Tópico</label>
+                    <div className="form-group mb-3">
+                        <label htmlFor="name" className="fw-bold">Nome do Tópico</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
                         <input
                             type="text"
                             id="name"
@@ -100,9 +106,11 @@ const AddTopic = () => {
                             required
                             maxLength={maxLength}
                         />
+                        </div>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="description">Descrição</label>
+
+                    <div className="form-group mb-3">
+                        <label htmlFor="description" className="fw-bold">Descrição</label>
                         <textarea
                             id="description"
                             className="form-control"

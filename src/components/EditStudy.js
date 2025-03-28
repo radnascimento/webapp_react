@@ -2,7 +2,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import studyService from '../services/StudyService';
 import topicService from '../services/TopicService';
-import {  FaSave, FaBookOpen } from 'react-icons/fa';
+import { FaSave, FaBookOpen, FaCheck } from 'react-icons/fa';
 import { isValidYouTubeEmbedUrl } from '../utils/helper';
 import Swal from "sweetalert2";
 
@@ -20,20 +20,20 @@ const EditStudy = () => {
     const [comment, setcomment] = useState(''); // State for the note
     const [activeTab, setActiveTab] = useState("note");
 
-  const handleChange = (e) => {
+    const handleChange = (e) => {
         const newUrl = e.target.value;
         setUrl(newUrl);
-    
+
         // Validate the URL
         if (newUrl && !isValidYouTubeEmbedUrl(newUrl)) {
-          setError("URL de incorporação do YouTube inválida. Deve estar no formato: https://www.youtube.com/embed/{videoId}");
+            setError("URL de incorporação do YouTube inválida. Deve estar no formato: https://www.youtube.com/embed/{videoId}");
         } else {
-          setError("");
+            setError("");
         }
-      };
+    };
 
 
- const loadData = async () => {
+    const loadData = async () => {
         Swal.fire({
             title: 'Aguarde',
             text: 'O conteúdo está sendo carregado...',
@@ -63,53 +63,53 @@ const EditStudy = () => {
                 setStudy(data);
                 setIdTopic(data.encIdTopic);
                 setNote(data.note);
-                setcomment(data.comment || ""); 
+                setcomment(data.comment || "");
                 setDescription(data.description);
                 setUrl(data.url);
                 setTimeout(() => {
-                                    Swal.close();
-                                }, 1000);  
-                
+                    Swal.close();
+                }, 1000);
+
             } catch (error) {
                 setTimeout(() => {
-                                    Swal.close();
-                                }, 1000);  
+                    Swal.close();
+                }, 1000);
                 setError('Failed to load study');
             }
         };
 
         fetchData();
     }, [id]);
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const idStudy = id;
 
         const updatedStudy = {
-            encIdStudy:idStudy,
-            encIdTopic:idTopic,
+            encIdStudy: idStudy,
+            encIdTopic: idTopic,
             note,
             description,
             url,
-            comment:comment
+            comment: comment
         };
 
-        
+
 
         try {
             await studyService.updateStudy(idStudy, updatedStudy);
-            
 
-          Swal.fire({
-              title: "Sucesso!",
-              text: "Conteúdo atualizado com sucesso!",
-              icon: "success",
-              confirmButtonText: "OK",
-              customClass: {
-                  confirmButton: "btn btn-success", // Add your class here
-              },
-              buttonsStyling: true
+
+            Swal.fire({
+                title: "Sucesso!",
+                text: "Conteúdo atualizado com sucesso!",
+                icon: "success",
+                confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
 
             }).then(() => {
                 navigate("/study"); // Redirect after confirmation
@@ -125,6 +125,10 @@ const EditStudy = () => {
                 text: "Failed to update Content.",
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
         }
     };
@@ -166,28 +170,34 @@ const EditStudy = () => {
 
                 <form onSubmit={handleSubmit}>
 
-                <div className="form-group mb-3"> {/* Added margin-bottom */}
-                        {/* <label htmlFor="idTopic" className="fw-bold">Selecione o Tópico</label> Made bold */}
-                        <select
-                            id="idTopic"
-                            className="form-control"
-                            value={idTopic}
-                            onChange={(e) => setIdTopic(e.target.value)}
-                            required
-                        >
-                            <option value="">...</option>
-                            {topics.map((topic) => (
-                                <option key={topic.encId} value={topic.encId}>
-                                    {topic.name}
-                                </option>
-                            ))}
-                        </select>
+                    <div className="form-group mb-3"> {/* Added margin-bottom */}
+
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-list"></i></span>
+                            <select
+                                id="idTopic"
+                                className="form-control"
+                                value={idTopic}
+                                onChange={(e) => setIdTopic(e.target.value)}
+                                required
+                            >
+                                <option value="">...</option>
+                                {topics.map((topic) => (
+                                    <option key={topic.encId} value={topic.encId}>
+                                        {topic.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
+
 
                     <div className="form-group mb-3"> {/* Added margin-bottom */}
                         <label htmlFor="description" className="fw-bold"> {/* Made bold */}
-                            Descrição (Max {100} characters, {100 - description.length} remaining)
+                            Nome do Conteúdo (Max {100} characters, {100 - description.length} remaining)
                         </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
                         <input
                             type="text"
                             id="description"
@@ -197,87 +207,108 @@ const EditStudy = () => {
                             required
                             maxLength={100}
                         />
+                        </div>
                     </div>
 
-                    
+
+
                     <div className="form-group mb-3">
-    <label htmlFor="url" className="fw-bold">
-        Url (Max {100} caracteres, {100 - (url?.length || 0)} restante)
-    </label>
-    <input
-        type="text"
-        id="url"
-        className="form-control"
-        value={url || ""}
-        // onChange={(e) => setUrl(e.target.value)}
-        onChange={handleChange}
-        maxLength={100}
-    />
-</div>
+                        <label htmlFor="url" className="fw-bold">
+                            Url (Max {100} caracteres, {100 - (url?.length || 0)} restante)
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-link"></i></span>
+                        <input
+                            type="text"
+                            id="url"
+                            className="form-control"
+                            value={url || ""}
+                            // onChange={(e) => setUrl(e.target.value)}
+                            onChange={handleChange}
+                            maxLength={100}
+                        />
+                        </div>
+                    </div>
+
+                  
+                   
 
 
 
-<ul className="nav nav-tabs">
-    <li className="nav-item">
-        <button
-            className={`nav-link ${activeTab === "note" ? "active" : ""}`}
-            onClick={() => setActiveTab("note")}
-            type="button"
-        >
-            Conteúdo
-        </button>
-    </li>
-    <li className="nav-item">
-        <button
-            className={`nav-link ${activeTab === "comment" ? "active" : ""}`}
-            onClick={() => setActiveTab("comment")}
-            type="button"
-        >
-            Comentário
-        </button>
-    </li>
-</ul>
 
 
-<div className="tab-content mt-3">
-    {activeTab === "note" && (
-        <div className="form-group">
-            <label htmlFor="note" className="fw-bold">
-                Conteúdo (Max {maxLength} caracteres, {maxLength - note.length} restante)
-            </label>
-            <textarea
-                id="note"
-                className="form-control custom-textarea"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                required
-                maxLength={4000}
-            ></textarea>
-        </div>
-    )}
-
-    {activeTab === "comment" && (
-        <div className="form-group">
-            <label htmlFor="comment" className="fw-bold">
-                Comentário (Max {300} caracteres, {300 - comment.length} restante)
-            </label>
-            <textarea
-                id="comment"
-                className="form-control custom-textarea"
-                value={comment}
-                onChange={(e) => setcomment(e.target.value)}
-                maxLength={300}
-            ></textarea>
-        </div>
-    )}
-</div>
+                    <ul className="nav nav-tabs">
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === "note" ? "active" : ""}`}
+                                onClick={() => setActiveTab("note")}
+                                type="button"
+                            >
+                                <i class="fa-solid fa-tag"></i> Conteúdo
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === "comment" ? "active" : ""}`}
+                                onClick={() => setActiveTab("comment")}
+                                type="button"
+                            >
+                                <i class="fa-solid fa-comment" ></i> Comentário
+                            </button>
+                        </li>
+                    </ul>
 
 
-<div className="form-group mt-4">
-    <button type="submit" className="btn btn-success btn-sm">
-        <FaSave size={20} className="mr-2" /> Salvar
-    </button>
-</div>
+                    <div className="tab-content mb-3 mt-3">
+                        {activeTab === "note" && (
+                            <div className="form-group">
+                                <label htmlFor="note" className="fw-bold">
+                                    Conteúdo (Max {maxLength} caracteres, {maxLength - note.length} restante)
+                                </label>
+                                <textarea
+                                    id="note"
+                                    className="form-control custom-textarea"
+                                    value={note}
+                                    onChange={(e) => setNote(e.target.value)}
+                                    required
+                                    maxLength={4000}
+                                ></textarea>
+                            </div>
+                        )}
+
+                        {activeTab === "comment" && (
+                            <div className="form-group">
+                                <label htmlFor="comment" className="fw-bold">
+                                    Comentário (Max {300} caracteres, {300 - comment.length} restante)
+                                </label>
+                                <textarea
+                                    id="comment"
+                                    className="form-control custom-textarea"
+                                    value={comment}
+                                    onChange={(e) => setcomment(e.target.value)}
+                                    maxLength={300}
+                                ></textarea>
+                            </div>
+                        )}
+                    </div>
+
+                    {/*AQUI ROGER*/}
+                    <div className="form-group mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-check"></i></span>
+                            <select className="form-select" id="revisaoSelect">
+                                <option value="manter">Habilitar Revisão</option>
+                                <option value="suspender">Suspender Revisão</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div className="form-group mt-4">
+                        <button type="submit" className="btn btn-success btn-sm">
+                            <FaSave size={20} className="mr-2" /> Salvar
+                        </button>
+                    </div>
 
                 </form>
             </div>

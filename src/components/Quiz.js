@@ -21,6 +21,10 @@ const Quiz = () => {
                 text: `You selected: ${option.description}`,
                 icon: "success",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             }).then(() => {
                 navigate(-1); // Change to your desired route
             });
@@ -31,6 +35,10 @@ const Quiz = () => {
                 text: `Would you like to try it again?`,
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
         }
 

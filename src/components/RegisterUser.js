@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import Swal from 'sweetalert2'; // SweetAlert2 import
 import LoginService from '../services/LoginService'; // Import LoginService
-import { UserOutlined, LockOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import {     EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { FaSave, FaUser } from 'react-icons/fa'; // Import the users icon from react-icons
 
 const RegisterUser = () => {
     const [username, setUsername] = useState('');
@@ -22,8 +23,13 @@ const RegisterUser = () => {
                 title: 'Error',
                 text: 'Passwords do not match!',
                 icon: 'error',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
+
             setLoading(false);
             return;
         }
@@ -35,7 +41,11 @@ const RegisterUser = () => {
                 title: 'Registration Successful',
                 text: `User ${username} has been registered successfully! The user will receive an e-mail to confirm the register and after that the access will be available.`,
                 icon: 'success',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
 
             // Clear form fields after successful registration
@@ -48,8 +58,15 @@ const RegisterUser = () => {
                 title: 'Registration Failed',
                 text: error.message || 'An error occurred while registering the user',
                 icon: 'error',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
+            
+
+
         } finally {
             setLoading(false);
         }
@@ -58,11 +75,18 @@ const RegisterUser = () => {
     return (
         <div className="container mt-5">
             <div className="bg-white p-4 rounded shadow-sm">
-                <h2 className="text-center mb-4">Register New User</h2>
+                {/*<h2 className="text-center mb-4">Register New User</h2>*/}
+
+                <div className="d-flex align-items-center justify-content-between mb-4">
+                    <div className="d-flex align-items-center">
+                        <FaUser size={30} className="mr-3" /> 
+                        <h2 className="mb-0">Cadastro</h2> 
+                    </div>
+                </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                        <label htmlFor="username" className="form-label">Username</label>
+                        <label htmlFor="username" className="form-label">Nome de Usuário</label>
                         <input
                             type="text"
                             id="username"
@@ -75,7 +99,7 @@ const RegisterUser = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email</label>
+                        <label htmlFor="email" className="form-label">E-mail</label>
                         <input
                             type="email"
                             id="email"
@@ -88,7 +112,7 @@ const RegisterUser = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="password" className="form-label">Password</label>
+                        <label htmlFor="password" className="form-label">Senha</label>
                         <div className="input-group">
                             <input
                                 type={showPassword ? 'text' : 'password'}
@@ -110,7 +134,7 @@ const RegisterUser = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="rePassword" className="form-label">Re-enter Password</label>
+                        <label htmlFor="rePassword" className="form-label">Confirmar Senha</label>
                         <div className="input-group">
                             <input
                                 type={showPassword ? 'text' : 'password'}
@@ -131,11 +155,21 @@ const RegisterUser = () => {
                         </div>
                     </div>
 
-                    <div className="text-center">
-                        <button type="submit" className="btn btn-primary btn-sm" disabled={loading}>
-                            {loading ? 'Registering...' : 'Register User'}
+                    {/*<div className="text-center">*/}
+                    {/*    <button type="submit" className="btn btn-primary btn-sm" disabled={loading}>*/}
+                    {/*        {loading ? 'Registering...' : 'Register User'}*/}
+                    {/*    </button>*/}
+                    {/*</div>*/}
+
+                    <div className="text-start">
+                        <button type="submit" className="btn btn-success btn-sm" disabled={loading}>
+                            <FaSave size={20} className="mr-2" />
+                            {loading ? 'Atualizando...' : ' Salvar'}
                         </button>
                     </div>
+
+
+
                 </form>
             </div>
             <br />

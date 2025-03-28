@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import HomePage from './components/HomePage';
-
+import AdBanner from "./components/AdBanner";
 import Header from './components/Head';
 import Footer from './components/Footer';
 import Users from './components/Users'; // Import Users component
@@ -42,6 +42,7 @@ import LoginGoogle from './components/LoginGoogle';
 import FlipCard from './components/FlipCard';
 import Help from './components/Help';
 import TermsOfUsePage from './components/TermsOfUsePage';
+import ForgotPassword from './components/ForgotPassword';
 
 
 
@@ -107,6 +108,8 @@ const App = () => {
                     <Route path="/flipcard" element={<FlipCard />} />
                     <Route path="/termsOfUsePage" element={<TermsOfUsePage />} />
                     <Route path="/help" element={<Help />} />
+                    <Route path="/forgotPassword" element={<ForgotPassword />} />
+                    
                     
                     {/* Public Routes */}
                     <Route path="/register" element={<RegisterUser />} />
@@ -114,7 +117,7 @@ const App = () => {
                 </Routes>
             </div>
 
-            {/* Footer will be shown on all pages */}
+            <AdBanner />
             <Footer className="footer" />
 
         </>

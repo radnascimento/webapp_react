@@ -7,7 +7,7 @@ import { useAuth } from '../components/AuthContext';
 import LoginService from '../services/LoginService';
 import { IpHelper } from '../utils/IpHelper';
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import Swal from 'sweetalert2';
+import { Link } from 'react-router-dom';
 
 const { Title } = Typography;
 
@@ -66,9 +66,6 @@ const Login: FC = () => {
                 notification.error({ message: 'Please complete the reCAPTCHA' });
                 return;
             }
-
-
-
 
             // Call your login service with username, password, IP, and reCAPTCHA token
             const { token: userToken, user } = await LoginService.login(
@@ -152,14 +149,15 @@ const Login: FC = () => {
                 <div className="text-center">
                     <Title level={2} className="login-title">Login</Title>
                 </div>
+
                 <Form name="login_form" className="login-form" onFinish={onFinish}>
-                    <Form.Item name="username" rules={[{ required: true, message: "Please input your Username!" }]}>
-                        <Input prefix={<UserOutlined />} placeholder="Username" />
+                    <Form.Item name="username" rules={[{ required: true, message: "Informe seu nome de usuário!" }]}>
+                        <Input prefix={<UserOutlined />} placeholder="Nome de usuário" />
                     </Form.Item>
-                    <Form.Item name="password" rules={[{ required: true, message: "Please input your Password!" }]}>
+                    <Form.Item name="password" rules={[{ required: true, message: "Informe sua senha!" }]}>
                         <Input.Password
                             prefix={<LockOutlined />}
-                            placeholder="Password"
+                            placeholder="Senha"
                             iconRender={visible => visible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                             visibilityToggle={{
                                 visible: passwordVisible,
@@ -168,6 +166,10 @@ const Login: FC = () => {
                         />
                     </Form.Item>
                     <Form.Item>
+                        <Link to="/forgotPassword">
+                            <span>Esqueci a senha</span>
+                        </Link>
+                        <hr></hr>
                         <Button type="primary" className="login-form-button" htmlType="submit" block loading={loading}>
                             Log in
                         </Button>
@@ -176,7 +178,13 @@ const Login: FC = () => {
                 <GoogleOAuthProvider clientId="1098760243833-akesrh6fq895qka13h8ljovimtfgf620.apps.googleusercontent.com">
                     <GoogleLogin onSuccess={handleLoginSuccess} onError={handleLoginFailure} useOneTap />
                 </GoogleOAuthProvider>
+                <hr></hr>
+                <Link to="/register">
+                    <span>Não possui conta? Cadastre-se</span>
+                </Link>
+
             </Card>
+            
         </div>
     );
 };

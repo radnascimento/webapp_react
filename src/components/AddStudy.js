@@ -4,7 +4,6 @@ import { FaBook, FaSave } from 'react-icons/fa'; // Import the icon for study an
 import studyService from '../services/StudyService'; // Import the service that handles study-related requests
 import topicService from '../services/TopicService'; // Assuming you have this for fetching topics or levels
 import { isValidYouTubeEmbedUrl } from '../utils/helper';
-
 import Swal from "sweetalert2";
 
 const AddStudy = () => {
@@ -20,19 +19,19 @@ const AddStudy = () => {
     const [loading, setLoading] = useState(false); // State for loading
     const [activeTab, setActiveTab] = useState("note");
     const navigate = useNavigate();
-   
+
 
     const handleChange = (e) => {
         const newUrl = e.target.value;
         setUrl(newUrl);
-    
+
         // Validate the URL
         if (newUrl && !isValidYouTubeEmbedUrl(newUrl)) {
-          setError("URL de incorporação do YouTube inválida. Deve estar no formato: https://www.youtube.com/embed/{videoId}");
+            setError("URL de incorporação do YouTube inválida. Deve estar no formato: https://www.youtube.com/embed/{videoId}");
         } else {
-          setError("");
+            setError("");
         }
-      };
+    };
 
 
 
@@ -49,11 +48,11 @@ const AddStudy = () => {
 
         fetchTopics(); // Call the function to fetch topics on mount
 
-     
+
 
     }, []);
 
-   
+
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission
@@ -157,122 +156,135 @@ const AddStudy = () => {
                 {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
                 <form onSubmit={handleSubmit}>
-            
-            <div className="form-group mb-3">
-                <select
-                    id="idTopic"
-                    className="form-control"
-                    value={idTopic}
-                    onChange={(e) => setIdTopic(e.target.value)}
-                    required
-                >
-                    <option value="">Selecione o Tópico</option>
-                    {topics.map((topic) => (
-                        <option key={topic.encId} value={topic.encId}>{topic.name}</option>
-                    ))}
-                </select>
-            </div>
 
-            
-            <div className="form-group mb-3">
-                <label htmlFor="description" className="fw-bold">
-                    Descrição (Max {100} caracteres, {100 - description.length} restante)
-                </label>
-                <input
-                    type="text"
-                    id="description"
-                    className="form-control"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    maxLength={100}
-                />
-            </div>
+                    <div className="form-group mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-list"></i></span>
+                            <select
+                                id="idTopic"
+                                className="form-control"
+                                value={idTopic}
+                                onChange={(e) => setIdTopic(e.target.value)}
+                                required
+                            >
+                                <option value="">Selecione o Tópico</option>
+                                {topics.map((topic) => (
+                                    <option key={topic.encId} value={topic.encId}>{topic.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
 
-            
-            <div className="form-group mb-3">
-                <label htmlFor="url" className="fw-bold">
-                    Url (Max {100} caracteres, {100 - url.length} restante)
-                </label>
-                <input
-                    type="text"
-                    id="url"
-                    className="form-control"
-                    value={url}
-                    // onChange={(e) => setUrl(e.target.value)}
-                    onChange={handleChange}
-                    maxLength={100}
-                />
-            </div>
 
-            
-            <ul className="nav nav-tabs">
-                <li className="nav-item">
-                    <button
-                        className={`nav-link ${activeTab === "note" ? "active" : ""}`}
-                        onClick={() => setActiveTab("note")}
-                        type="button"
-                    >
-                        Conteúdo
-                    </button>
-                </li>
-                <li className="nav-item">
-                    <button
-                        className={`nav-link ${activeTab === "comment" ? "active" : ""}`}
-                        onClick={() => setActiveTab("comment")}
-                        type="button"
-                    >
-                        Comentário
-                    </button>
-                </li>
-            </ul>
+                    <div className="form-group mb-3">
+                        
 
-            
-            <div className="tab-content mt-3">
-                {activeTab === "note" && (
-                    <div className="form-group">
-                        <label htmlFor="note" className="fw-bold">
-                            Conteúdo (Max {maxLength} caracteres, {maxLength - note.length} restante)
+                        <label htmlFor="description" className="fw-bold">
+                            Nome do Conteúdo (Max {100} caracteres, {100 - description.length} restante)
                         </label>
-                        <textarea
-                            id="note"
-                            className="form-control custom-textarea"
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
+                        <input
+                            type="text"
+                            id="description"
+                            className="form-control"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             required
-                            maxLength={4000}
-                        ></textarea>
+                            maxLength={100}
+                        />
+                        </div>
                     </div>
-                )}
 
-                {activeTab === "comment" && (
-                    <div className="form-group">
-                        <label htmlFor="comment" className="fw-bold">
-                            Comentário (Max {300} caracteres, {300 - comment.length} restante)
+
+                    <div className="form-group mb-3">
+                        
+                        <label htmlFor="url" className="fw-bold">
+                            Url (Max {100} caracteres, {100 - url.length} restante)
                         </label>
-                        <textarea
-                            id="comment"
-                            className="form-control custom-textarea"
-                            value={comment}
-                            onChange={(e) => setcomment(e.target.value)}
-                            maxLength={300}
-                        ></textarea>
-                    </div>
-                )}
-            </div>
 
-            
-            <div className="form-group mt-4">
-                <button
-                    type="submit"
-                    className="btn btn-success btn-sm"
-                    disabled={loading}
-                >
-                    <FaSave size={20} className="me-2" />
-                    {loading ? "Salvando..." : "Salvar"}
-                </button>
-            </div>
-        </form>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-link"></i></span>
+                        <input
+                            type="text"
+                            id="url"
+                            className="form-control"
+                            value={url}
+                            // onChange={(e) => setUrl(e.target.value)}
+                            onChange={handleChange}
+                            maxLength={100}
+                        />
+                        </div>
+                    </div>
+
+
+                    <ul className="nav nav-tabs">
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === "note" ? "active" : ""}`}
+                                onClick={() => setActiveTab("note")}
+                                type="button"
+                            >
+                                <i class="fa-solid fa-tag"></i> Conteúdo
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === "comment" ? "active" : ""}`}
+                                onClick={() => setActiveTab("comment")}
+                                type="button"
+                            >
+                                <i class="fa-solid fa-comment" ></i> Comentário
+                            </button>
+                        </li>
+                    </ul>
+
+
+                    <div className="tab-content mt-3">
+                        {activeTab === "note" && (
+                            <div className="form-group">
+                                <label htmlFor="note" className="fw-bold">
+                                    Conteúdo (Max {maxLength} caracteres, {maxLength - note.length} restante)
+                                </label>
+                                <textarea
+                                    id="note"
+                                    className="form-control custom-textarea"
+                                    value={note}
+                                    onChange={(e) => setNote(e.target.value)}
+                                    required
+                                    maxLength={4000}
+                                ></textarea>
+                            </div>
+                        )}
+
+                        {activeTab === "comment" && (
+                            <div className="form-group">
+                                <label htmlFor="comment" className="fw-bold">
+                                    Comentário (Max {300} caracteres, {300 - comment.length} restante)
+                                </label>
+                                <textarea
+                                    id="comment"
+                                    className="form-control custom-textarea"
+                                    value={comment}
+                                    onChange={(e) => setcomment(e.target.value)}
+                                    maxLength={300}
+                                ></textarea>
+                            </div>
+                        )}
+                    </div>
+
+
+                    <div className="form-group mt-4">
+                        <button
+                            type="submit"
+                            className="btn btn-success btn-sm"
+                            disabled={loading}
+                        >
+                            <FaSave size={20} className="me-2" />
+                            {loading ? "Salvando..." : "Salvar"}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );

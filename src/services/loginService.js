@@ -172,7 +172,7 @@ class LoginService {
         }
     }
 
-    static async forgotPassword(email) {
+    static async forgotPassword(email,token) {
         try {
 
             const url = `${BASE_URL}/Authentication/`;
@@ -184,11 +184,12 @@ class LoginService {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ email, url }),
+                body: JSON.stringify({ email:email, recaptcha: token}),
             });
 
             if (!response.ok) {
-                let errorMessage = 'Failed to send password reset email';
+
+                const errorMessage = await response.text();
 
                 try {
                     const errorData = await response.json(); // Might fail if response is empty
@@ -197,13 +198,11 @@ class LoginService {
                     console.warn('Error parsing JSON response:', jsonError);
                 }
 
-                alert(errorMessage);
                 throw new Error(errorMessage);
             }
 
             return await response.json();
         } catch (error) {
-            console.error('Forgot password request failed:', error.message);
             throw new Error(error.message || 'An error occurred while processing your request');
         }
     }

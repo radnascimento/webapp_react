@@ -32,6 +32,10 @@ function Login() {
                 text: `Your IP: ${ipAddress}`,
                 icon: "info",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
             console.log("User's IP Address:", ipAddress);
         }
@@ -58,6 +62,10 @@ function Login() {
                 text: `Welcome, ${data.name}!`,
                 icon: "success",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
 
         } else {
@@ -66,6 +74,10 @@ function Login() {
                 text: "Invalid login credentials!",
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
         }
     };

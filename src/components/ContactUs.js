@@ -1,5 +1,7 @@
-﻿import React, { Component } from 'react';
-import ContactusService from '../services/ContactusService';
+﻿import React, { Component, useState } from 'react';
+import ContactusService from '../services/ContactusService'
+import Swal from "sweetalert2";
+// const [loading, setLoading] = useState(false); // State for loading;
 
 class ContactUs extends Component {
     constructor(props) {
@@ -12,6 +14,8 @@ class ContactUs extends Component {
             captchaToken: '',
         };
     }
+
+    
 
     // Load reCAPTCHA script on component mount
     componentDidMount() {
@@ -66,13 +70,27 @@ class ContactUs extends Component {
             this.setState({ error: "Por favor, complete o reCAPTCHA." });
             return;
         }
+        // setLoading(true); 
 
         await ContactusService.contactUs({ nameFrom: nome, from: email, body: mensagem, recaptcha: token });
 
         this.setState({ nome: '', email: '', mensagem: '', error: null });
 
-        // Show success message
-        alert("Mensagem enviada com sucesso!");
+        // setLoading(false); 
+        
+        
+
+  Swal.fire({
+                title: "Sucesso!",
+                text: `"Mensagem enviada com sucesso!`,
+                icon: "success",
+                confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
+            });
+
     };
 
     render() {
@@ -91,8 +109,13 @@ class ContactUs extends Component {
                             </section>
                             <section>
                                 <form onSubmit={this.handleSubmit}>
-                                    <div className="mb-3">
+                                    
+                                    <div className="input-group mb-3">
+                                        
                                         <label htmlFor="nome" className="form-label">Nome:</label>
+
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
                                         <input
                                             type="text"
                                             id="nome"
@@ -102,10 +125,13 @@ class ContactUs extends Component {
                                             onChange={this.handleInputChange}
                                             required
                                         />
+                                        </div>
                                     </div>
 
                                     <div className="mb-3">
                                         <label htmlFor="email" className="form-label">E-mail:</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
                                         <input
                                             type="email"
                                             id="email"
@@ -115,7 +141,9 @@ class ContactUs extends Component {
                                             onChange={this.handleInputChange}
                                             required
                                         />
+                                        </div>
                                     </div>
+
 
                                     <div className="mb-3">
                                         <label htmlFor="mensagem" className="form-label">Mensagem:</label>
@@ -136,11 +164,12 @@ class ContactUs extends Component {
                                         </div>
                                     )}
 
-                                    <div className="text-center">
-                                        <button type="submit" className="btn btn-success btn-lg">
-                                            Enviar
+                                    <div className="form-group mt-4">
+                                        <button type="submit" className="btn btn-success btn-sm">
+                                            <i class="fa-solid fa-paper-plane"></i>  Enviar
                                         </button>
                                     </div>
+
                                 </form>
                             </section>
                         </div>

@@ -5,18 +5,19 @@ import topicService from '../services/TopicService';
 import { FaSave, FaBookOpen } from 'react-icons/fa';
 import ReactMarkdown from "react-markdown";
 import Swal from 'sweetalert2';
-
+import studyReviewService from '../services/StudyReviewService';
 
 const DetailStudy = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [study, setStudy] = useState(null);
     const [idTopic, setIdTopic] = useState('');
-    /*const [operationDate, setOperationDate] = useState('');*/
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [topics, setTopics] = useState([]);
     const [note, setNote] = useState('');
+    const [description, setDescription] = useState('');
+    const [nextReview, setNextReview] = useState('');
 
     const loadData = async () => {
         Swal.fire({
@@ -48,15 +49,19 @@ const DetailStudy = () => {
                 setStudy(data);
                 setIdTopic(data.idTopic);
                 setNote(data.note);
+                setDescription(data.description);
+                
+                const dataReview = await studyReviewService.getReviewByStudyId(data.encIdStudy);
+                const rawDate = new Date(dataReview[0].operationDate); 
+                const formattedDate = rawDate.toLocaleDateString("pt-BR");
 
-                // Sleep for 3 seconds before closing the SweetAlert
+                setNextReview(formattedDate);
                 setTimeout(() => {
                     Swal.close();
                 }, 3000);  // 3000 milliseconds = 3 seconds
 
             } catch (error) {
                 setError('Failed to load study');
-                // Close the modal in case of an error as well
                 setTimeout(() => {
                     Swal.close();
                 }, 3000);
@@ -67,7 +72,6 @@ const DetailStudy = () => {
     }, [id]);
 
 
-    // Fetch topics and levels on component mount
     useEffect(() => {
 
         loadData();
@@ -131,15 +135,9 @@ const DetailStudy = () => {
                 <div className="mb-3">
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb">
-                            {/*<li className="breadcrumb-item">*/}
-                            {/*    <Link to="/home" className="text-decoration-none">Página Inicial</Link>*/}
-                            {/*</li>*/}
                             <li className="breadcrumb-item">
                                 <Link to="/study" className="text-decoration-none">Gerenciamento de Conteúdo</Link>
                             </li>
-                            {/*<li className="breadcrumb-item active" aria-current="page">*/}
-                            {/*    Detalhe Conteúdo*/}
-                            {/*</li>*/}
                         </ol>
                     </nav>
                 </div>
@@ -151,25 +149,33 @@ const DetailStudy = () => {
 
                     <div className="card shadow-sm">
                         <div className="card-body">
+
+                       
+
+                        <div className="form-group mb-3">
+                                <div className="mt-3 fw-bold">
+                                    {description}
+                                </div>
+                                <div className="mt-3 fw-bold">
+                                
+                                </div>
+                        
+                            </div>
                             <div className="form-group">
-                                {/*<label htmlFor="url">Note</label>*/}
-
                                 <div className="mt-3">
-
                                     <ReactMarkdown>{note}</ReactMarkdown>
                                 </div>
-
-
                             </div>
+
+
+                            <div className="form-group">
+                                <div className="mt-3 fw-bold">
+                                    <span>Próxima Revisão: </span>{nextReview}
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-                    {/*<div className="form-group mt-4">*/}
-                    {/*    <div className="d-flex align-items-center">*/}
-                    {/*        <Link to={`/quiz/${study.idStudy}`} className="btn btn-success btn-sm">*/}
-                    {/*            <i class="fa-solid fa-question"></i>*/}
-                    {/*        </Link>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
                 </form>
             </div>
         </div>

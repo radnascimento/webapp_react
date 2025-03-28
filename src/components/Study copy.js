@@ -305,9 +305,9 @@ const Studies = () => {
                                                     
                                                 )}
 
-                                                <div>
+                                                {/* <div>
                                                     <FaCalendarAlt onClick={() => openModal(study)} style={{ cursor: "pointer", fontSize: "20px", color: "#006D77",  }} />
-                                                </div>
+                                                </div> */}
                                                 {study.url && (
                                                 <div>
                                                         <span

@@ -14,9 +14,9 @@ const EditTopic = () => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [topics, setTopics] = useState([]);
-    
 
- const loadData = async () => {
+
+    const loadData = async () => {
         Swal.fire({
             title: 'Aguarde',
             text: 'O conteúdo está sendo carregado...',
@@ -49,10 +49,10 @@ const EditTopic = () => {
                 setIdTopic(data.encId);
                 setOperationDate(data.operationDate);
 
-                 setTimeout(() => {Swal.close();}, 1000);  
-                
+                setTimeout(() => { Swal.close(); }, 1000);
+
             } catch (error) {
-                setTimeout(() => {Swal.close();}, 1000);  
+                setTimeout(() => { Swal.close(); }, 1000);
                 setError('Failed to load topic');
             }
         };
@@ -72,7 +72,7 @@ const EditTopic = () => {
 
         try {
             await topicService.updateTopic(idTopic, updatedTopic);
-          
+
             Swal.fire({
                 title: "Sucesso!",
                 text: "Tópico atualizado com sucesso!",
@@ -97,6 +97,10 @@ const EditTopic = () => {
                 text: "Failed to update topic.",
                 icon: "error",
                 confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success", // Add your class here
+                },
+                buttonsStyling: true
             });
         }
     };
@@ -131,36 +135,40 @@ const EditTopic = () => {
                 {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
                 <form onSubmit={handleSubmit}>
-                <div className="form-group mb-3">
-    <label htmlFor="name" className="fw-bold">Nome do Tópico</label>
-    <input
-        type="text"
-        id="name"
-        className="form-control"
-        value={name || ""}
-        onChange={(e) => setName(e.target.value)}
-        required
-        maxLength={maxLength}
-    />
-</div>
+                    <div className="form-group mb-3">
+                        <label htmlFor="name" className="fw-bold">Nome do Tópico</label>
 
-<div className="form-group mb-3">
-    <label htmlFor="description" className="fw-bold">Descrição</label>
-    <textarea
-        id="description"
-        className="form-control"
-        value={description || ""}
-        onChange={(e) => setDescription(e.target.value)}
-        required
-        maxLength={maxLength}
-    ></textarea>
-</div>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
+                        <input
+                            type="text"
+                            id="name"
+                            className="form-control"
+                            value={name || ""}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            maxLength={maxLength}
+                        />
+                    </div>
+            </div>
 
-<div className="form-group mt-4">
-    <button type="submit" className="btn btn-success btn-sm">
-        <FaSave size={20} className="mr-2" /> Salvar
-    </button>
-</div>
+                    <div className="form-group mb-3">
+                        <label htmlFor="description" className="fw-bold">Descrição</label>
+                        <textarea
+                            id="description"
+                            className="form-control"
+                            value={description || ""}
+                            onChange={(e) => setDescription(e.target.value)}
+                            required
+                            maxLength={maxLength}
+                        ></textarea>
+                    </div>
+
+                    <div className="form-group mt-4">
+                        <button type="submit" className="btn btn-success btn-sm">
+                            <FaSave size={20} className="mr-2" /> Salvar
+                        </button>
+                    </div>
 
                 </form>
             </div>

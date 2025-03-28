@@ -1,23 +1,19 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import foto from '../logo/logo.png'; // Default import
+import foto from '../logo/logo.png';
 import { Tooltip } from 'antd';
-import { jwtDecode } from 'jwt-decode'; // Corrected import statement
+import { jwtDecode } from 'jwt-decode';
+import ZoomControls from "./ZoomControls";
 
 const Header = () => {
     const { user, logout, isAuthenticated } = useAuth();
     const [email, setEmail] = useState('');
     const [tooltipVisible, setTooltipVisible] = useState(false);
-    const navigate = useNavigate(); // React Router navigation
-    function getProfilePicture() {
-        return localStorage.getItem("profile_picture");
-    }
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = sessionStorage.getItem('authToken');
-
 
         if (token) {
             const decodedToken = jwtDecode(token);
@@ -26,18 +22,16 @@ const Header = () => {
         }
     }, []);
 
-    // Handles closing the tooltip and navigating
     const handleNavigation = (path) => {
         setTooltipVisible(false);
         setTimeout(() => navigate(path), 100);
     };
 
-    // Fix for Logout
     const handleLogout = () => {
         setTooltipVisible(false);
         setTimeout(() => {
-            logout(); // Logs out the user
-            navigate("/"); // Redirect to login/homepage
+            logout();
+            navigate("/");
         }, 100);
     };
 
@@ -49,32 +43,17 @@ const Header = () => {
                         {isAuthenticated ? user?.username : ''}<br />
                         {email}<br /><hr />
 
-                        {/* Profile Link */}
-                        <Link
-                            to="#"
-                            className="navbar-brand"
-                            onClick={() => handleNavigation("/editUser")}
-                        >
+                        <Link to="#" className="navbar-brand" onClick={() => handleNavigation("/editUser")}>
                             <i className="fa-regular fa-user" style={{ fontSize: '20px', cursor: 'pointer', color: '#347960' }}></i>
                             &nbsp;Seu Perfil
                         </Link><br /><hr />
 
-                        {/* Help Link */}
-                        <Link
-                            to="#"
-                            className="navbar-brand"
-                            onClick={() => handleNavigation("/help")}
-                        >
+                        <Link to="#" className="navbar-brand" onClick={() => handleNavigation("/help")}>
                             <i className="fa-solid fa-circle-info" style={{ fontSize: '20px', cursor: 'pointer', color: '#347960' }}></i>
                             &nbsp;Ajuda
                         </Link><br /><hr />
 
-                        {/* Logout Link - FIXED */}
-                        <Link
-                            to="#"
-                            className="navbar-brand"
-                            onClick={handleLogout} // Calls the fixed logout function
-                        >
+                        <Link to="#" className="navbar-brand" onClick={handleLogout}>
                             <i className="fa-solid fa-right-from-bracket" style={{ fontSize: '20px', cursor: 'pointer', color: '#347960' }}></i>
                             &nbsp;Sair
                         </Link><br />
@@ -103,14 +82,19 @@ const Header = () => {
                 letterSpacing: '2px'
             }}>Estude em Movimento</span>
 
-            <div className="ml-auto">
+            {/* Aligning elements to the left */}
+            <div className="d-flex align-items-center">
                 <Link to="/home" className="btn btn-outline-light btn-sm mx-2" title="Go Home">
                     <i className="fa-solid fa-house"></i>
                 </Link>
+            </div>
+
+            {/* Aligning zoom controls to the right and hiding on mobile */}
+            <div className="ms-auto d-none d-sm-block d-flex align-items-center gap-2">
+                <ZoomControls />
             </div>
         </nav>
     );
 };
 
 export default Header;
-
