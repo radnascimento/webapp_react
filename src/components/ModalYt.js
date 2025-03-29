@@ -7,12 +7,13 @@ const ModalYt = ({ isOpen, onClose, nameTopic, url }) => {
             <style>
                 {`
                 .modal-overlay {
-                    background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent overlay */
+                    background-color: rgba(0, 0, 0, 0.5); 
                 }
                 .modal-content {
                     text-align: center;
                     padding: 5px;
                     border-radius: 5px;
+                    background-color: black;
                 }
 
                 .modal-title {

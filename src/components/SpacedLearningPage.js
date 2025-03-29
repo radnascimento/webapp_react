@@ -6,14 +6,14 @@ const SpacedLearningPage = () => {
         <div className="container mt-5">
             <div className="bg-white p-4 rounded shadow-sm">
                 <div className="spaced-learning-page">
-                    <h1>Aprendizado Espaçado</h1>
+                    <h1 className="mb-0 heading-spacing">Aprendizado Espaçado</h1>
                     <p className="intro" style={{ textAlign: 'left' }}>
 
                         O aprendizado espaçado, também conhecido como prática distribuída, é um método de aprendizado que consiste em repetir informações ao longo do tempo com intervalos entre as sessões. Esse método baseia-se na ideia de que a repetição intercalada das informações auxilia na criação de memórias de longo prazo.
                     </p>
 
                     <section className="how-it-works">
-                        <h2>Como Funciona</h2>
+                        <h2 className="mb-0 heading-spacing">Como Funciona</h2>
                         <ul>
                             <li><strong>Divisão do conteúdo:</strong> Separe grandes volumes de informação em sessões menores.</li>
                             <li><strong>Repetição do conteúdo:</strong> Revise as informações várias vezes ao longo do tempo.</li>
@@ -24,7 +24,7 @@ const SpacedLearningPage = () => {
                     </section>
 
                     <section className="how-it-works">
-                        <h2>Benefícios</h2>
+                        <h2 className="mb-0 heading-spacing">Benefícios</h2>
                         <ul>
                             <li>O aprendizado espaçado pode ajudar a reter informações por mais tempo.</li>
                             <li>Ele pode ajudar a aplicar o conhecimento em situações práticas.</li>
@@ -33,7 +33,7 @@ const SpacedLearningPage = () => {
                     </section>
 
                     <section className="how-it-works">
-                        <h2>Exemplos de Aplicação</h2>
+                        <h2 className="mb-0 heading-spacing">Exemplos de Aplicação</h2>
                         <ul>
                             <li>
                                 <strong>Aprendizado de idiomas:</strong> Ao aprender novas palavras, revise os termos mais difíceis hoje, depois em alguns dias e novamente em uma semana.

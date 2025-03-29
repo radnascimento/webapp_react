@@ -108,7 +108,7 @@ const Studies = () => {
         let rating;  // Initialize the rating variable in the correct scope
 
         const result = await Swal.fire({
-            title: "Classifique seu conhecimento",
+            title: "Classifique Seu Conhecimento",
             html: `<p>Qual é o seu nível de conhecimento em relação a este estudo?</p> ${getStars()}`,
             icon: "warning",
             showCancelButton: true,

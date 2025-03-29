@@ -102,7 +102,7 @@ class ContactUs extends Component {
                     <div className="col-md-8 col-lg-6">
                         <div className="bg-light p-4 rounded shadow-sm bg-white">
                             <section className="text-center mb-4">
-                                <h2>Fale Conosco!</h2>
+                                <h2 className="mb-0 heading-spacing">Fale Conosco!</h2>
                                 <p className="lead">
                                     Tem uma dúvida, sugestão ou problema para relatar? Estamos aqui para ajudar e valorizamos o seu feedback.
                                 </p>

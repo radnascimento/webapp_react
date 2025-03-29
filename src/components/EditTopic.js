@@ -136,7 +136,9 @@ const EditTopic = () => {
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group mb-3">
-                        <label htmlFor="name" className="fw-bold">Nome do Tópico</label>
+                        <label htmlFor="name" className="fw-bold">Nome do Tópico
+                            (Max {100} caracteres, {100 - name.length} restante)
+                        </label>
 
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
@@ -153,7 +155,9 @@ const EditTopic = () => {
             </div>
 
                     <div className="form-group mb-3">
-                        <label htmlFor="description" className="fw-bold">Descrição</label>
+                        <label htmlFor="description" className="fw-bold">Descrição
+                            (Max {100} caracteres, {100 - description.length} restante)
+                        </label>
                         <textarea
                             id="description"
                             className="form-control"

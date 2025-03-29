@@ -19,6 +19,8 @@ const EditStudy = () => {
     const [url, setUrl] = useState(''); // State for the note
     const [comment, setcomment] = useState(''); // State for the note
     const [activeTab, setActiveTab] = useState("note");
+    const [enablereview, setEnableReview] = useState(''); // State for the note
+
 
     const handleChange = (e) => {
         const newUrl = e.target.value;
@@ -60,10 +62,19 @@ const EditStudy = () => {
                 const topicsData = await topicService.getTopics();
                 setTopics(topicsData);
                 const data = await studyService.getStudyById(id);
+
                 setStudy(data);
                 setIdTopic(data.encIdTopic);
                 setNote(data.note);
                 setcomment(data.comment || "");
+
+                if (data.enableReview === false) {
+                    setEnableReview("0");
+                }
+                else {
+                    setEnableReview("1");
+                }
+
                 setDescription(data.description);
                 setUrl(data.url);
                 setTimeout(() => {
@@ -84,6 +95,10 @@ const EditStudy = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        var e = true;
+
+        if (enablereview === "0") { e = false; }
+
         const idStudy = id;
 
         const updatedStudy = {
@@ -92,10 +107,9 @@ const EditStudy = () => {
             note,
             description,
             url,
-            comment: comment
+            comment: comment,
+            enableReview: e
         };
-
-
 
         try {
             await studyService.updateStudy(idStudy, updatedStudy);
@@ -152,15 +166,9 @@ const EditStudy = () => {
                 <div className="mb-3">
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb">
-                            {/*<li className="breadcrumb-item">*/}
-                            {/*    <Link to="/home" className="text-decoration-none">Página Inicial</Link>*/}
-                            {/*</li>*/}
                             <li className="breadcrumb-item">
                                 <Link to="/study" className="text-decoration-none">Gerenciamento de Conteúdo</Link>
                             </li>
-                            {/*<li className="breadcrumb-item active" aria-current="page">*/}
-                            {/*    Editar Conteúdo*/}
-                            {/*</li>*/}
                         </ol>
                     </nav>
                 </div>
@@ -194,7 +202,7 @@ const EditStudy = () => {
 
                     <div className="form-group mb-3"> {/* Added margin-bottom */}
                         <label htmlFor="description" className="fw-bold"> {/* Made bold */}
-                            Nome do Conteúdo (Max {100} characters, {100 - description.length} remaining)
+                            Nome do Conteúdo (Max {100} caracteres, {100 - description.length} restante)
                         </label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
@@ -229,13 +237,6 @@ const EditStudy = () => {
                         />
                         </div>
                     </div>
-
-                  
-                   
-
-
-
-
 
                     <ul className="nav nav-tabs">
                         <li className="nav-item">
@@ -296,10 +297,16 @@ const EditStudy = () => {
                     <div className="form-group mb-3">
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-check"></i></span>
-                            <select className="form-select" id="revisaoSelect">
-                                <option value="manter">Habilitar Revisão</option>
-                                <option value="suspender">Suspender Revisão</option>
+
+
+                            <select className="form-select" id="revisaoSelect" required onChange={(e) => setEnableReview(e.target.value)} value={enablereview}>
+                                <option value="1">Habilitar Revisão</option>
+                                <option value="0">Suspender Revisão</option>
                             </select>
+
+
+
+
                         </div>
                     </div>
 

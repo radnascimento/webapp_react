@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaSearch, FaCalendarAlt, FaBookOpen,  FaPencilAlt,  FaYoutube } from 'react-icons/fa';
+import { FaSearch, FaPen, FaBookOpen,  FaPencilAlt,  FaYoutube } from 'react-icons/fa';
 import { FaForward , FaBackward } from 'react-icons/fa'; // Import icons for study, save, and navigation buttons
 import ModalWithIframe from "./ModalWithIframe";
 import studyService from '../services/StudyService';
@@ -300,7 +300,7 @@ const Studies = () => {
                                                             to={`/EditStudy/${study.encIdStudy}`}
                                                             style={{ fontSize: "20px", color: "#006D77" }}
                                                         >
-                                                            <FaPencilAlt />
+                                                            <FaPen />
                                                         </Link>
                                                     
                                                 )}

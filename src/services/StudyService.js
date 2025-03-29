@@ -193,7 +193,7 @@ const saveStudy = async (study) => {
 
 // Update an existing study
 const updateStudy = async (id, study) => {
-    
+
     try {
         const token = sessionStorage.getItem('authToken');
 
